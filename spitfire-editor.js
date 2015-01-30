@@ -1,9 +1,11 @@
+var Root = require('./components/widgets/root.js');
+
 function SpitfireEditor() {
 }
 
 SpitfireEditor.prototype.init = function(gui, root) {
     this.gui = gui;
-    this.root = root;
+    this.root = new Root(root);
     var args = this.gui.App.fullArgv;
 
     var entryFile = 'main.js';
@@ -15,7 +17,7 @@ SpitfireEditor.prototype.init = function(gui, root) {
     }
 
     var entry = require('./' + entryFile);
-    entry.init(gui, root);
+    entry.init(gui, this.root);
 };
 
 module.exports = new SpitfireEditor();
