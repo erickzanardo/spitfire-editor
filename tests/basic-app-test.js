@@ -4,7 +4,7 @@ function EditorEntry() {}
 
 EditorEntry.prototype.init = function(gui, root) {
     var text = root.find('#SpitfireContainer').text();
-    assert.eq('asdasd', text, 'SpitfireContainer should have Loading... text');
+    assert.eq('Loading...', text, 'SpitfireContainer should have Loading... text');
 
     gui.App.quit();
 }
