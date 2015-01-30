@@ -12,6 +12,21 @@ EditorEntry.prototype.init = function(gui, root) {
     splitPanel.horizontal(true);
     assert.isTrue(splitPanel.element().is('.se-split-panel-horizontal'), 'Split panel must be horizontal when used horizontal function');
 
+    splitPanel.add(new Panel());
+    splitPanel.add(new Panel());
+
+    assert.eq(2, splitPanel.children());
+    assert.eq('50%', splitPanel.children()[0].element().css('height'), 'Elements must have 50% height when using a vertical panel with 2 children');
+    assert.eq('50%', splitPanel.children()[1].element().css('height'), 'Elements must have 50% height when using a vertical panel with 2 children');
+
+    splitPanel.horizontal(false);
+    assert.eq('50%', splitPanel.children()[0].element().css('width'), 'Elements must have 50% width when using a vertical panel with 2 children');
+    assert.eq('50%', splitPanel.children()[1].element().css('width'), 'Elements must have 50% width when using a vertical panel with 2 children');
+
+    splitPanel.remove(0);
+    assert.eq(1, splitPanel.children().length, 'Removing children from the panel');
+    assert.eq('100%', splitPanel.children()[0].element().css('width'), 'Elements must have 100% width when using a vertical panel with 1 children');
+
     gui.App.quit();
 }
 
