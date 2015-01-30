@@ -9,7 +9,7 @@ Widget.prototype.element = function() {
 
 Widget.prototype.appendTo = function(target) {
     this.parent = target;
-    target.element().append(this._element);
+    this._element = this.element().appendTo(target.element());
 }
 
 module.exports = Widget;

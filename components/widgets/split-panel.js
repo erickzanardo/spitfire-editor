@@ -27,6 +27,7 @@ extend(Widget, SplitPanel, {
     add: function(child) {
         this._children.push(child);
         this.calculateSizes();
+        child.appendTo(this);
     },
     calculateSizes: function() {
         var size = this._children.length;
