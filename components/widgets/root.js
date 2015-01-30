@@ -1,3 +1,4 @@
+var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 
 function Root(root){
@@ -5,9 +6,7 @@ function Root(root){
     this._element = root;
 }
 
-Root.prototype = Object.create(Widget.prototype, {
-    appendTo: function() {throw 'Unsupported'}
-});
+extend(Widget, Root, {});
 
 Root.prototype.constructor = Root;
 
