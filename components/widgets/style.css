@@ -55,6 +55,7 @@ table {
 
 .se-panel {
     border: 1px solid #000;
+    position: relative;
 }
 
 .se-split-panel {
@@ -64,4 +65,12 @@ table {
 
 .se-split-panel-vertical .se-panel {
     display: inline-block;
+}
+
+#SpitfireContainer .se-ace-editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }

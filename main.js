@@ -1,5 +1,6 @@
 var SplitPanel = require('./components/widgets/split-panel.js');
 var Panel = require('./components/widgets/panel.js');
+var AceEditor = require('./components/widgets/ace-editor.js');
 
 var $ = require('./core/libs/jquery-2.1.3.min.js');
 
@@ -16,6 +17,10 @@ EditorEntry.prototype.init = function(gui, root) {
 
     mainPanel.add(leftPanel);
     mainPanel.add(rightPanel);
+
+    aceEditor = new AceEditor(gui);
+    aceEditor.appendTo(rightPanel);
+    aceEditor.build();
 }
 
 module.exports = new EditorEntry();
