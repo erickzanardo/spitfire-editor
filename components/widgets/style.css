@@ -56,6 +56,7 @@ table {
 .se-panel {
     border: 1px solid #000;
     position: relative;
+    overflow: auto;
 }
 
 .se-split-panel {
@@ -78,8 +79,13 @@ table {
 .navigation-tree {
     position: absolute;
     margin-left: 10px;
+    padding-left: 20px;
 }
 
 .navigation-tree ul {
     margin-left: 10px;
+}
+
+.navigation-tree li.folder a {
+    margin-left: 5px;
 }
