@@ -1,6 +1,7 @@
 var SplitPanel = require('./components/widgets/split-panel.js');
 var Panel = require('./components/widgets/panel.js');
 var NavigationTree = require('./components/widgets/navigation-tree.js');
+var TabEditor = require('./components/widgets/tab-editor.js');
 var AceEditor = require('./components/widgets/ace-editor.js');
 
 var $ = require('./core/libs/jquery-2.1.3.min.js');
@@ -24,18 +25,17 @@ EditorEntry.prototype.init = function(gui, root) {
     codePanel.fixedSize(true);
     mainPanel.add(codePanel);
 
+    var rightPanel = new Panel();
+    var tabEditor = new TabEditor(gui);
+    tabEditor.appendTo(rightPanel);
+
     var leftPanel = new Panel();
-    var navigationTree = new NavigationTree();
+    var navigationTree = new NavigationTree(tabEditor);
     navigationTree.appendTo(leftPanel);
     navigationTree.openFolder('/home/erick/projetos/spitfire-editor');
 
-    var rightPanel = new Panel();
     codePanel.add(leftPanel, 20);
     codePanel.add(rightPanel, 80);
-
-    aceEditor = new AceEditor(gui);
-    aceEditor.appendTo(rightPanel);
-    aceEditor.build();
 }
 
 module.exports = new EditorEntry();

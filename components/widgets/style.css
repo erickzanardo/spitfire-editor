@@ -89,3 +89,8 @@ table {
 .navigation-tree li.folder a {
     margin-left: 5px;
 }
+
+.se-tab-panel {
+    width: 100%;
+    height: 100%;
+}

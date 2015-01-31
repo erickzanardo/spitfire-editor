@@ -1,4 +1,4 @@
-fs = require('fs');
+var fs = require('fs');
 
 function FileUtils() {
 }
@@ -50,6 +50,10 @@ FileUtils.prototype.readDirTree = function(path) {
         }
     }
     return tree;
+};
+
+FileUtils.prototype.readFile = function(path, callback) {
+    fs.readFile(path, 'utf-8', callback);
 };
 
 module.exports = new FileUtils();

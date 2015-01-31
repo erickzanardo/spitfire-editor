@@ -3,9 +3,10 @@ var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 var fu = require('../utils/file-utils.js');
 
-function NavigationTree(){
+function NavigationTree(tabEditor){
     Widget.call(this);
     this._element = $('<ul class="navigation-tree"></ul>');
+    this._tabEditor = tabEditor;
 }
 
 extend(Widget, NavigationTree, {
@@ -28,6 +29,13 @@ extend(Widget, NavigationTree, {
             }
             return false;
         });
+
+        var te = this._tabEditor;
+        this._element.find('.file > a').click(function() {
+            var path = $(this).attr('data-path');
+            te.openFile(path);
+            return false;
+        });
     },
     _buildFolder: function(folder_itens, element) {
         for (var i = 0 ; i < folder_itens.length ; i++) {
@@ -43,7 +51,9 @@ extend(Widget, NavigationTree, {
                 this._buildFolder(node.tree, list.appendTo(folder));
             } else {
                 var file = $('<li class="file"><span></span><a href="#"></a></li>');
-                file.children('a').text(node.name);
+                var a = file.children('a');
+                a.text(node.name);
+                a.attr('data-path', node.path.join('/'));
                 element.append(file);
             }
         }

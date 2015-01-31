@@ -12,6 +12,9 @@ extend(Widget, AceEditor, {
     build: function() {
         var ace = this._gui.Window.get().window.ace;
         this._editor = ace.edit('editor1');
+    },
+    text: function(text) {
+        this._element.text(text);
     }
 });
 
