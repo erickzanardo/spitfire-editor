@@ -1,5 +1,6 @@
 var SplitPanel = require('./components/widgets/split-panel.js');
 var Panel = require('./components/widgets/panel.js');
+var NavigationTree = require('./components/widgets/navigation-tree.js');
 var AceEditor = require('./components/widgets/ace-editor.js');
 
 var $ = require('./core/libs/jquery-2.1.3.min.js');
@@ -24,8 +25,11 @@ EditorEntry.prototype.init = function(gui, root) {
     mainPanel.add(codePanel);
 
     var leftPanel = new Panel();
-    var rightPanel = new Panel();
+    var navigationTree = new NavigationTree();
+    navigationTree.appendTo(leftPanel);
+    navigationTree.openFolder('/home/erick/projetos/spitfire-editor');
 
+    var rightPanel = new Panel();
     codePanel.add(leftPanel, 20);
     codePanel.add(rightPanel, 80);
 

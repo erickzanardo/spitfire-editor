@@ -74,3 +74,12 @@ table {
     bottom: 0;
     left: 0;
 }
+
+.navigation-tree {
+    position: absolute;
+    margin-left: 10px;
+}
+
+.navigation-tree ul {
+    margin-left: 10px;
+}
