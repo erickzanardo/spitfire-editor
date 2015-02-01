@@ -26,7 +26,7 @@ EditorEntry.prototype.init = function(gui, root) {
     mainPanel.add(codePanel);
 
     var rightPanel = new Panel();
-    var tabEditor = new TabEditor(gui);
+    var tabEditor = new TabEditor(gui, 1);
     tabEditor.appendTo(rightPanel);
 
     var leftPanel = new Panel();

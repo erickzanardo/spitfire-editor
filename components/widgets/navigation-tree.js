@@ -32,8 +32,9 @@ extend(Widget, NavigationTree, {
 
         var te = this._tabEditor;
         this._element.find('.file > a').click(function() {
-            var path = $(this).attr('data-path');
-            te.openFile(path);
+            var me = $(this);
+            var path = me.attr('data-path');
+            te.openFile(me.text(), path);
             return false;
         });
     },
