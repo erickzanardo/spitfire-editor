@@ -32,7 +32,6 @@ EditorEntry.prototype.init = function(gui, root) {
     var leftPanel = new Panel();
     var navigationTree = new NavigationTree(tabEditor);
     navigationTree.appendTo(leftPanel);
-    navigationTree.openFolder('/home/erick/projetos/spitfire-editor');
 
     codePanel.add(leftPanel, 20);
     codePanel.add(rightPanel, 80);

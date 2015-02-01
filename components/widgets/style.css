@@ -76,8 +76,9 @@ table {
     left: 0;
 }
 
-.navigation-tree {
+.navigation-tree-container {
     position: absolute;
+    padding-top: 15px;
     margin-left: 10px;
     padding-left: 20px;
 }

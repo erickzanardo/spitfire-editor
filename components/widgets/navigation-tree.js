@@ -5,14 +5,22 @@ var fu = require('../utils/file-utils.js');
 
 function NavigationTree(tabEditor){
     Widget.call(this);
-    this._element = $('<ul class="navigation-tree"></ul>');
+    this._element = $('<div class="navigation-tree-container"><input type="file" id="open-folder" webkitdirectory /><ul class="navigation-tree"></ul></div>');
     this._tabEditor = tabEditor;
+
+    var me = this;
+    this._element.find('#open-folder').change(function() {
+        me.element().children('.navigation-tree').children().remove();
+        me._tabEditor.closeAll();
+        var folder = $(this).val();
+        me.openFolder(folder);
+    });
 }
 
 extend(Widget, NavigationTree, {
     openFolder: function(path) {
         var tree = fu.readDirTree(path.split('/'));
-        this._buildFolder(tree, this._element);
+        this._buildFolder(tree, this._element.find('.navigation-tree'));
 
         this._element.find('.folder > a').click(function() {
             var me = $(this);

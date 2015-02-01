@@ -111,6 +111,11 @@ extend(Widget, TabEditor, {
             this._selectedTab--;
         }
     },
+    closeAll: function() {
+        while (this._editors.length) {
+            this.closeTab(0);
+        }
+    },
     saveCurrentFile: function() {
     },
     saveAllFiles: function() {
