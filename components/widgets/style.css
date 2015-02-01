@@ -109,3 +109,8 @@ table {
     width: 100%;
     position: relative;
 }
+
+.se-toolbar ul {
+    margin-left: 20px;
+    font-size: 20px;
+}
