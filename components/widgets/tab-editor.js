@@ -55,7 +55,7 @@ extend(Widget, TabEditor, {
                 var editorContainer = element.find('.editor-container');
                 var tabContainer = element.find('.nav');
 
-                var aceEditor = new AceEditor(gui, tabEditorId, editors.length);
+                var aceEditor = new AceEditor(gui, tabEditorId, editors.length, path);
                 editorContainer.append(aceEditor.element());
                 aceEditor.text(data);
                 aceEditor.build();
