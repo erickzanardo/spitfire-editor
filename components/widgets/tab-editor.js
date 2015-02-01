@@ -27,42 +27,44 @@ extend(Widget, TabEditor, {
         var me = this;
         var element = this._element;
 
-        if (element.find('a[href=' + path ']').length) {
-            console.log('opened');
-        } else {
-        }
-
-        var gui = this._gui;
-
-        var files = this._files;
-        var editors = this._editors;
-
-        var tabEditorId = this._id;
-
-
-        fu.readFile(path, function (err, data) {
-            if (err) throw err;
-            
+        var openedFiles = element.find(['a[href="', path, '"]'].join(''));
+        if (openedFiles.length) {
             me.hideSelectedTab();
-            
-            var editorContainer = element.find('.editor-container');
-            var tabContainer = element.find('.nav');
+            var i = openedFiles.parent().index();
+            me.selectTab(i);
+        } else {
+            var gui = this._gui;
 
-            var aceEditor = new AceEditor(gui, tabEditorId, editors.length);
-            editorContainer.append(aceEditor.element());
-            aceEditor.text(data);
-            aceEditor.build();
+            var files = this._files;
+            var editors = this._editors;
 
-            var tab = $('<li role="presentation"><a href="#"></a>');
-            var a = tab.children('a');
-            a.attr('href', path);
-            a.text(name);
-            tabContainer.append(tab);
+            var tabEditorId = this._id;
 
-            me.selectTab(editors.length);
-            files.push(path);
-            editors.push(aceEditor);
-        });
+
+            fu.readFile(path, function (err, data) {
+                if (err) throw err;
+
+                me.hideSelectedTab();
+
+                var editorContainer = element.find('.editor-container');
+                var tabContainer = element.find('.nav');
+
+                var aceEditor = new AceEditor(gui, tabEditorId, editors.length);
+                editorContainer.append(aceEditor.element());
+                aceEditor.text(data);
+                aceEditor.build();
+
+                var tab = $('<li role="presentation"><a href="#"></a>');
+                var a = tab.children('a');
+                a.attr('href', path);
+                a.text(name);
+                tabContainer.append(tab);
+
+                me.selectTab(editors.length);
+                files.push(path);
+                editors.push(aceEditor);
+            });
+        }
     },
     hideSelectedTab: function() {
         var index = this._selectedTab;
