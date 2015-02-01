@@ -25,13 +25,20 @@ function TabEditor(gui, id){
 extend(Widget, TabEditor, {
     openFile: function(name, path) {
         var me = this;
+        var element = this._element;
+
+        if (element.find('a[href=' + path ']').length) {
+            console.log('opened');
+        } else {
+        }
+
         var gui = this._gui;
 
         var files = this._files;
         var editors = this._editors;
 
         var tabEditorId = this._id;
-        var element = this._element;
+
 
         fu.readFile(path, function (err, data) {
             if (err) throw err;
