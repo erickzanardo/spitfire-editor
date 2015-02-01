@@ -14,6 +14,10 @@ extend(Widget, AceEditor, {
     build: function() {
         var ace = this._gui.Window.get().window.ace;
         this._editor = ace.edit(this._myId);
+        var modelist = ace.require('ace/ext/modelist');
+        var filePath = 'blahblah/weee/some.js';
+        var mode = modelist.getModeForPath(filePath).mode;
+        this._editor.session.setMode(mode);
     },
     text: function(text) {
         this._element.text(text);
