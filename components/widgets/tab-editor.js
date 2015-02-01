@@ -20,6 +20,12 @@ function TabEditor(gui, id){
         me.selectTab(i);
         return false;
     });
+    
+    this._element.on('click', '.nav li a span.glyphicon-remove', function() {
+        var i = $(this).parent().parent().index();
+        me.closeTab(i);
+        return false;
+    });
 }
 
 extend(Widget, TabEditor, {
@@ -54,10 +60,10 @@ extend(Widget, TabEditor, {
                 aceEditor.text(data);
                 aceEditor.build();
 
-                var tab = $('<li role="presentation"><a href="#"></a>');
+                var tab = $('<li role="presentation"><a href="#"><span class="glyphicon glyphicon-remove"></span></a>');
                 var a = tab.children('a');
                 a.attr('href', path);
-                a.text(name);
+                a.prepend(name);
                 tabContainer.append(tab);
 
                 me.selectTab(editors.length);
@@ -83,6 +89,27 @@ extend(Widget, TabEditor, {
 
         editorContainer.find('.se-ace-editor').eq(index).show();
         tabContainer.find('li').eq(index).addClass('active');
+    },
+    closeTab: function(index) {
+        if (index == this._selectedTab) {
+            this.hideSelectedTab();
+        }
+        this._files.splice(index, 1);
+        this._editors.splice(index, 1);
+
+        var editorContainer = this._element.find('.editor-container');
+        var tabContainer = this._element.find('.nav');
+        editorContainer.find('.se-ace-editor').eq(index).remove();
+        tabContainer.find('li').eq(index).remove();
+
+        if (index == this._selectedTab) {
+            this._selectedTab--;
+            if (this._selectedTab > -1) {
+                this.selectTab(this._selectedTab);
+            }
+        } else if (index < this._selectedTab) {
+            this._selectedTab--;
+        }
     },
     saveCurrentFile: function() {
     },

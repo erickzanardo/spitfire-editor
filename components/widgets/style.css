@@ -99,6 +99,10 @@ table {
     height: 5%;
 }
 
+.se-tab-panel .nav li a span.glyphicon-remove {
+    margin: 3px;
+}
+
 .editor-container {
     height: 95%;
     width: 100%;
