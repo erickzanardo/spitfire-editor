@@ -8,11 +8,26 @@
       <script type="text/javascript" src="core/libs/bootstap/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ace.js"></script>
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ext-modelist.js"></script>
+      <script type="text/javascript" src="core/spitfire-manager.js"></script>
       <script type="text/javascript">
           $(document).ready(function() {
+              var spitfireManager = new SpitfireManager();
+
+              $(document).bind('keydown.terminal', function(e) {
+                  var key = e.which;
+
+                  var listeners = spitfireManager.inputListeners();
+                  for (var i = 0 ; i < listeners.length ; i++) {
+                      var listener = listeners[i];
+                      if (!listener(e)) {
+                          return false;
+                      }
+                  }
+              });
+              
               var gui = require('nw.gui');
               var se = require('./spitfire-editor.js');
-              se.init(gui, $('#SpitfireContainer'));
+              se.init(gui, $('#SpitfireContainer'), spitfireManager);
           });
       </script>
   </head>
