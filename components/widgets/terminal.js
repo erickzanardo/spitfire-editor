@@ -13,24 +13,51 @@ function Terminal(manager){
     this._element = $('<div class="se-terminal"></div>');
     this._focus = true; // TODO mudar
     this._lines = [];
+    this._commands = {
+        echo: function(args, terminal){
+            terminal.printLine(args.join(' '));
+        }
+    };
     this.addLine();
 
     var me = this;
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
             var w = e.which;
-            console.log(w)
-            
+            //console.log(w)
+
             var lines = me._lines;
             var line = lines[lines.length - 1]
             if (w == ENTER_KEY) {
-                console.log(line.text());
+                line.find('.cursor').removeClass('cursor');
+                var commandLine = line.text();
+                var split = commandLine.split(' ');
+                var args = [];
+                for (var i = 0 ; i < split.length ; i++) {
+                    var arg = split[i];
+                    if (arg) {
+                        args.push(arg);
+                    }
+                }
+                
+                var command = args.shift();
+                console.log(command);
+                if (me._commands[command]) {
+                    me._commands[command](args, me);
+                } else {
+                    me.printLine('unrecognized command: ' + command);
+                }
+                
                 me.addLine();
+            } else if (w == BACKSPACE_KEY) {
+                line.find('.cursor').prev().remove();
             } else if (w == LEFT_KEY || w == RIGHT_KEY) {
+                var commandLength = line.text().length;
                 var c = line.find('.cursor');
-                c.removeClass('cursor');
-                var newCursor = w == LEFT_KEY ? newCursor = c.prev() : newCursor = c.next();
-                if (newCursor) {
+                var newCursor = (w == LEFT_KEY ? newCursor = c.prev() : newCursor = c.next());
+                var cursorIndex = newCursor.index();
+                if (cursorIndex >= 0 && cursorIndex <= commandLength) {
+                    c.removeClass('cursor');
                     newCursor.addClass('cursor');
                 }
             } else {
@@ -54,8 +81,12 @@ extend(Widget, Terminal, {
         var line = $('<p class="line"><span class="cursor"></span></line>');
         line = line.appendTo(this._element);
         this._lines.push(line);
+    },
+    printLine: function(value) {
+        var line = $('<p class="line"></line>');
+        line.text(value);
+        line.appendTo(this._element);
     }
-    
 });
 
 Terminal.prototype.constructor = Terminal;

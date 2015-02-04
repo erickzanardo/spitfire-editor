@@ -13,17 +13,22 @@
           $(document).ready(function() {
               var spitfireManager = new SpitfireManager();
 
-              $(document).bind('keydown.terminal', function(e) {
+              var keydownkeys = [8, 18, 37, 39];
+              var keyhandler = function(e) {
                   var key = e.which;
-
-                  var listeners = spitfireManager.inputListeners();
-                  for (var i = 0 ; i < listeners.length ; i++) {
-                      var listener = listeners[i];
-                      if (!listener(e)) {
-                          return false;
+                  if ((e.type == 'keypress') || (e.type == 'keydown' && keydownkeys.indexOf(key) != -1)) {
+                      var listeners = spitfireManager.inputListeners();
+                      for (var i = 0 ; i < listeners.length ; i++) {
+                          var listener = listeners[i];
+                          if (!listener(e)) {
+                              return false;
+                          }
                       }
                   }
-              });
+              };
+              
+              $(document).bind('keydown.terminal', keyhandler);
+              $(document).bind('keypress.terminal', keyhandler);
               
               var gui = require('nw.gui');
               var se = require('./spitfire-editor.js');
