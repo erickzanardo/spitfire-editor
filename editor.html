@@ -13,7 +13,14 @@
           $(document).ready(function() {
               var spitfireManager = new SpitfireManager();
 
-              var keydownkeys = [8, 18, 37, 39];
+              var keyManager = spitfireManager.keyManager();
+              var helperKeys = keyManager.helperKeys;
+              
+              var keydownkeys = [helperKeys.BACKSPACE_KEY,
+                                 helperKeys.CONTROL_KEY,
+                                 helperKeys.LEFT_KEY,
+                                 helperKeys.RIGHT_KEY];
+              
               var keyhandler = function(e) {
                   var key = e.which;
                   if ((e.type == 'keypress') || (e.type == 'keydown' && keydownkeys.indexOf(key) != -1)) {

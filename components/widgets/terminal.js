@@ -2,12 +2,6 @@ var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 
-var ENTER_KEY = 13;
-var BACKSPACE_KEY = 8;
-var CONTROL_KEY = 18;
-var LEFT_KEY = 37;
-var RIGHT_KEY = 39;
-
 function Terminal(manager){
     Widget.call(this);
     this._element = $('<div class="se-terminal"></div>');
@@ -21,6 +15,10 @@ function Terminal(manager){
     this.addLine();
 
     var me = this;
+    
+    var keyManager = manager.keyManager();
+    var helperKeys = keyManager.helperKeys;
+    
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
             var w = e.which;
@@ -28,7 +26,7 @@ function Terminal(manager){
 
             var lines = me._lines;
             var line = lines[lines.length - 1]
-            if (w == ENTER_KEY) {
+            if (w == helperKeys.ENTER_KEY) {
                 line.find('.cursor').removeClass('cursor');
                 var commandLine = line.text();
                 var split = commandLine.split(' ');
@@ -49,12 +47,12 @@ function Terminal(manager){
                 }
                 
                 me.addLine();
-            } else if (w == BACKSPACE_KEY) {
+            } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
-            } else if (w == LEFT_KEY || w == RIGHT_KEY) {
+            } else if (w == helperKeys.LEFT_KEY || w == helperKeys.RIGHT_KEY) {
                 var commandLength = line.text().length;
                 var c = line.find('.cursor');
-                var newCursor = (w == LEFT_KEY ? newCursor = c.prev() : newCursor = c.next());
+                var newCursor = (w == helperKeys.LEFT_KEY ? newCursor = c.prev() : newCursor = c.next());
                 var cursorIndex = newCursor.index();
                 if (cursorIndex >= 0 && cursorIndex <= commandLength) {
                     c.removeClass('cursor');
