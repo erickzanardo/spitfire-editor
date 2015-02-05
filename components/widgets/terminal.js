@@ -11,6 +11,18 @@ function Terminal(manager){
     this._currentFolder = null;
 
     var me = this;
+    manager.registerShortcut('ctrl+c', function(e) {
+        if (me.hasFocus()) {
+            var lines = me._lines;
+            if (lines.length) {
+                var line = lines[lines.length - 1];
+                line.find('.cursor').removeClass('cursor');
+                me.addLine();
+            }
+            e.preventDefault();
+        }
+    });
+
     this._commands = {
         echo: function(args, terminal){
             terminal.printLine(args.join(' '));

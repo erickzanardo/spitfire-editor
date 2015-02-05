@@ -1,16 +1,21 @@
 var keyManager = {
     helperKeys: {
         BACKSPACE_KEY: 8,
-        CONTROL_KEY: 18,
+        CONTROL_KEY: 17,
+        ALT_KEY: 18,
         LEFT_KEY: 37,
+        UP_KEY: 38,
         RIGHT_KEY: 39,
+        DOWN_KEY: 40,
+        TAB_KEY: 9,
         ENTER_KEY: 13
     }
 };
 
-SpitfireManager = function() {
+SpitfireManager = function(mousetrap) {
     this._inputListeners = [];
     this._actions = {};
+    this._mousetrap = mousetrap;
 };
 
 SpitfireManager.prototype.addInputListener = function(listener) {
@@ -27,6 +32,10 @@ SpitfireManager.prototype.keyManager = function() {
 
 SpitfireManager.prototype.registerAction = function(key, obj, func) {
     this._actions[key] = {obj: obj, func: func};
+};
+
+SpitfireManager.prototype.registerShortcut = function(shortcut, callback) {
+    this._mousetrap.bind(shortcut, callback);
 };
 
 SpitfireManager.prototype.action = function(key, args) {

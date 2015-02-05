@@ -9,9 +9,10 @@
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ace.js"></script>
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ext-modelist.js"></script>
       <script type="text/javascript" src="core/spitfire-manager.js"></script>
+      <script type="text/javascript" src="core/libs/mousetrap.min.js"></script>
       <script type="text/javascript">
           $(document).ready(function() {
-              var spitfireManager = new SpitfireManager();
+              var spitfireManager = new SpitfireManager(Mousetrap);
 
               var keyManager = spitfireManager.keyManager();
               var helperKeys = keyManager.helperKeys;
@@ -20,9 +21,10 @@
                                  helperKeys.CONTROL_KEY,
                                  helperKeys.LEFT_KEY,
                                  helperKeys.RIGHT_KEY];
-              
+
               var keyhandler = function(e) {
                   var key = e.which;
+
                   if ((e.type == 'keypress') || (e.type == 'keydown' && keydownkeys.indexOf(key) != -1)) {
                       var listeners = spitfireManager.inputListeners();
                       for (var i = 0 ; i < listeners.length ; i++) {
