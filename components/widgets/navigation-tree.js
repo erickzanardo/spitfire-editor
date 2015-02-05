@@ -3,18 +3,12 @@ var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 var fu = require('../utils/file-utils.js');
 
-function NavigationTree(tabEditor){
+function NavigationTree(tabEditor, manager){
     Widget.call(this);
-    this._element = $('<div class="navigation-tree-container"><input type="file" id="open-folder" webkitdirectory /><ul class="navigation-tree"></ul></div>');
+    this._element = $('<div class="navigation-tree-container"><ul class="navigation-tree"></ul></div>');
     this._tabEditor = tabEditor;
 
-    var me = this;
-    this._element.find('#open-folder').change(function() {
-        me.element().children('.navigation-tree').children().remove();
-        me._tabEditor.closeAll();
-        var folder = $(this).val();
-        me.openFolder(folder);
-    });
+    manager.registerAction('OPEN_FOLDER', this, 'openFolder');
 }
 
 extend(Widget, NavigationTree, {
@@ -45,6 +39,8 @@ extend(Widget, NavigationTree, {
             te.openFile(me.text(), path);
             return false;
         });
+
+        return tree;
     },
     _buildFolder: function(folder_itens, element) {
         for (var i = 0 ; i < folder_itens.length ; i++) {

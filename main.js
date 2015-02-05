@@ -32,7 +32,7 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     tabEditor.appendTo(rightPanel);
 
     var leftPanel = new Panel();
-    var navigationTree = new NavigationTree(tabEditor);
+    var navigationTree = new NavigationTree(tabEditor, manager);
     navigationTree.appendTo(leftPanel);
 
     codePanel.add(leftPanel, 20);
