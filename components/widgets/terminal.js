@@ -5,7 +5,7 @@ var $ = require('../../core/libs/jquery-2.1.3.min.js');
 function Terminal(manager){
     Widget.call(this);
     this._element = $('<div class="se-terminal"></div>');
-    this._focus = true; // TODO mudar
+    this._focus = false;
     this._lines = [];
     this._tree = [];
     this._currentFolder = null;
@@ -140,6 +140,11 @@ extend(Widget, Terminal, {
     },
     focus: function(focus) {
         this._focus = focus;
+        if (focus) {
+            this._element.addClass('active');
+        } else {
+            this._element.removeClass('active');
+        }
     },
     addLine: function() {
         var line = $('<p class="line"></p>');

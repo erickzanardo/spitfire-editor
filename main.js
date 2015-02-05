@@ -39,7 +39,12 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     codePanel.add(rightPanel, 80);
     
     var terminal = new Terminal(manager);
-    mainPanel.add(terminal, 20)
+    mainPanel.add(terminal, 20);
+
+    manager.registerShortcut('esc', function(e) {
+        terminal.focus(!terminal.hasFocus());
+        e.preventDefault();
+    });
 }
 
 module.exports = new EditorEntry();

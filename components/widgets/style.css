@@ -133,7 +133,7 @@ table {
     display: inline-block;
 }
 
-.se-terminal .line .cursor {
+.se-terminal.active .line .cursor {
     display: inline-block;
     width: 1em;
     height: 1em;
