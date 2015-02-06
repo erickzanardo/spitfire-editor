@@ -10,6 +10,13 @@ function Terminal(gui, manager){
     this._lines = [];
     this._tree = [];
     this._currentFolder = null;
+    this._history = [];
+    this._historyIndex = 0;
+
+    var savedHistory = manager.localDb().get('COMMAND_HISTORY');
+    if (savedHistory) {
+        this._history = savedHistory;
+    }
 
     var me = this;
     manager.registerShortcut('ctrl+c', function(e) {
@@ -191,8 +198,22 @@ function Terminal(gui, manager){
                     me._commands[command](args, me, function() {
                         me.addLine();
                     });
+                    var history = line.find('.command').html();
+                    var found = false;
+                    for (var i = 0 ; i < me._history.length ; i++) {
+                        if (me._history[i] == history) {
+                            found = true;
+                        }
+                        break;
+                    }
+                    if (!found) {
+                        me._history.unshift(history);
+                        manager.localDb().save('COMMAND_HISTORY', me._history);
+                    }
+                    me._historyIndex = 0;
                 } else {
                     me.printLine('unrecognized command: ' + command);
+                    me.addLine();
                 }
             } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
@@ -204,6 +225,29 @@ function Terminal(gui, manager){
                 if (cursorIndex >= 0 && cursorIndex <= commandLength) {
                     c.removeClass('cursor');
                     newCursor.addClass('cursor');
+                }
+            } else if (w == helperKeys.DOWN_KEY || w == helperKeys.UP_KEY) {
+                var i = me._historyIndex;
+                var history = me._history;
+
+                if (history.length) {
+                    var command = history[i];
+                    line.find('.command').html(command);
+
+                    if (w == helperKeys.UP_KEY) {
+                        if (i == history.length - 1) {
+                            i = 0;
+                        } else {
+                            i++;
+                        }
+                    } else {
+                        if (i == 0) {
+                            i = history.length - 1;
+                        } else {
+                            i--;
+                        }
+                    }
+                    me._historyIndex = i;
                 }
             } else {
                 var char = (String.fromCharCode(w));

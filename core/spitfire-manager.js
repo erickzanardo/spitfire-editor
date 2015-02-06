@@ -12,10 +12,11 @@ var keyManager = {
     }
 };
 
-SpitfireManager = function(mousetrap) {
+SpitfireManager = function(mousetrap, localStorage) {
     this._inputListeners = [];
     this._actions = {};
     this._mousetrap = mousetrap;
+    this._localStorage = localStorage;
 };
 
 SpitfireManager.prototype.addInputListener = function(listener) {
@@ -36,6 +37,22 @@ SpitfireManager.prototype.registerAction = function(key, obj, func) {
 
 SpitfireManager.prototype.registerShortcut = function(shortcut, callback) {
     this._mousetrap.bind(shortcut, callback);
+};
+
+SpitfireManager.prototype.localDb = function() {
+    var ls = this._localStorage;
+    return {
+        save: function(key, json) {
+            ls.setItem(key, JSON.stringify(json));
+        },
+        get: function(key) {
+            var item = ls.getItem(key);
+            if (item) {
+                return JSON.parse(item);
+            }
+            return null;
+        }
+    };
 };
 
 SpitfireManager.prototype.action = function(key, args) {

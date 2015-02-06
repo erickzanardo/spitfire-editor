@@ -12,15 +12,18 @@
       <script type="text/javascript" src="core/libs/mousetrap.min.js"></script>
       <script type="text/javascript">
           $(document).ready(function() {
-              var spitfireManager = new SpitfireManager(Mousetrap);
+              var spitfireManager = new SpitfireManager(Mousetrap, localStorage);
 
               var keyManager = spitfireManager.keyManager();
               var helperKeys = keyManager.helperKeys;
               
+              // Some keys are not triggered by the keypress event
               var keydownkeys = [helperKeys.BACKSPACE_KEY,
                                  helperKeys.CONTROL_KEY,
                                  helperKeys.LEFT_KEY,
-                                 helperKeys.RIGHT_KEY];
+                                 helperKeys.RIGHT_KEY,
+                                 helperKeys.DOWN_KEY,
+                                 helperKeys.UP_KEY];
 
               var keyhandler = function(e) {
                   var key = e.which;
