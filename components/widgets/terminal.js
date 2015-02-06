@@ -214,6 +214,12 @@ function Terminal(gui, manager){
 
             var lines = me._lines;
             var line = lines[lines.length - 1]
+            
+            if (w == helperKeys.CONTROL_KEY) {
+                // Don't know why, but this key mess with the terminal :(
+                return;
+            }
+
             if (w == helperKeys.ENTER_KEY) {
                 line.find('.cursor').removeClass('cursor');
                 var commandLine = line.find('.command').text();
