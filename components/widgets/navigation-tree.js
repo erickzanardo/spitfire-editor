@@ -7,10 +7,48 @@ function NavigationTree(tabEditor, manager){
     Widget.call(this);
     this._element = $('<div class="navigation-tree-container"><ul class="navigation-tree"></ul></div>');
     this._tabEditor = tabEditor;
+    this._focus = false;
 
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
     manager.registerAction('UPDATE_TREE_FILE', this, '_updateTreeFile');
+
+    var keyManager = manager.keyManager();
+    var helperKeys = keyManager.helperKeys;
+
+    var me = this;
+    manager.addInputListener(function(e) {
+        if (me.hasFocus()) {
+            var key = e.which;
+            var current = me.element().find('.navigation-tree li.current');
+
+            if (current.length) {
+                if (key == helperKeys.DOWN_KEY) {
+                    var next;
+                    if (current.is('.folder') && current.is('.open')) {
+                        var first = current.find('ul li:first');
+                        next = first.length ? first : current.next();
+                    } else {
+                        next = current.next();
+                    }
+                    if (next.length) {
+                        current.removeClass('current');
+                        next.addClass('current');
+                    }
+                } else if (key == helperKeys.UP_KEY) {
+                    var prev = current.prev();
+                    if (prev.length) {
+                        current.removeClass('current');
+                        prev.addClass('current');
+                    }
+                } else if (key == helperKeys.ENTER_KEY) {
+                    current.children('a').click();
+                }
+            }
+            return false;
+        }
+        return true;
+    });
 }
 
 extend(Widget, NavigationTree, {
@@ -33,6 +71,21 @@ extend(Widget, NavigationTree, {
             }
             parent.append(this._createFileElement(file.node));
     },
+    focus: function(focus) {
+        this._focus = focus;
+        if (focus) {
+            this._element.addClass('active');
+            var current = this.element().find('.navigation-tree li.current');
+            if (!current.length) {
+                this.element().find('.navigation-tree li:first').addClass('current');
+            }
+        } else {
+            this._element.removeClass('active');
+        }
+    },
+    hasFocus: function() {
+        return this._focus;
+    },
     openFolder: function(path) {
         var tree = fu.readDirTree(path.split('/'));
         this._buildFolder(tree, this._element.find('.navigation-tree'));
@@ -44,10 +97,12 @@ extend(Widget, NavigationTree, {
             if (span.is('.glyphicon-folder-close')) {
                 span.removeClass('glyphicon-folder-close');
                 span.addClass('glyphicon-folder-open');
+                span.closest('li').addClass('open');
                 me.next().slideDown();
             } else {
                 span.removeClass('glyphicon-folder-open');
                 span.addClass('glyphicon-folder-close');
+                span.closest('li').removeClass('open');
                 me.next().slideUp();
             }
             return false;

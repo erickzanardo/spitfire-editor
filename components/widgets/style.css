@@ -91,6 +91,10 @@ table {
     margin-left: 5px;
 }
 
+.navigation-tree-container.active .navigation-tree li.current > a {
+    background-color: #c9c9c9;
+}
+
 .se-tab-panel {
     width: 100%;
     height: 100%;

@@ -45,6 +45,11 @@ EditorEntry.prototype.init = function(gui, root, manager) {
         terminal.focus(!terminal.hasFocus());
         e.preventDefault();
     });
+
+    manager.registerShortcut('ctrl+n', function(e) {
+        navigationTree.focus(!terminal.hasFocus());
+        e.preventDefault();
+    });
 }
 
 module.exports = new EditorEntry();

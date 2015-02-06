@@ -134,7 +134,7 @@ function Terminal(gui, manager){
 
             var path = args[0];
             var basePath = me._currentFolder.path;
-            var fullPath = [me._currentFolder.path, '/', path].join('');
+            var fullPath = [basePath.join('/'), '/', path].join('');
 
             fu.createDirs(fullPath, function(fullPath) {
                 var folders = path.split('/');
@@ -183,6 +183,7 @@ function Terminal(gui, manager){
             var fileName = args[0];
             if (fileName) {
                 var parent = me._currentFolder.path;
+
                 var basePath = parent.concat(fileName);
                 var fullPath = basePath.join('/');
                 console.log(parent);
@@ -293,7 +294,7 @@ function Terminal(gui, manager){
                 var char = (String.fromCharCode(w));
                 line.find('.cursor').before(['<span>', char, '</span>'].join(''));
             }
-
+            return false;
         }
         return true;
     });
