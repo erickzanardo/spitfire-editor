@@ -38,7 +38,7 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     codePanel.add(leftPanel, 20);
     codePanel.add(rightPanel, 80);
     
-    var terminal = new Terminal(manager);
+    var terminal = new Terminal(gui, manager);
     mainPanel.add(terminal, 20);
 
     manager.registerShortcut('esc', function(e) {

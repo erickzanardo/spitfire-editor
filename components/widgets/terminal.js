@@ -2,7 +2,7 @@ var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 
-function Terminal(manager){
+function Terminal(gui, manager){
     Widget.call(this);
     this._element = $('<div class="se-terminal"></div>');
     this._focus = false;
@@ -23,6 +23,25 @@ function Terminal(manager){
         }
     });
 
+    manager.registerShortcut('shift+ins', function(e) {
+        if (me.hasFocus()) {
+            var lines = me._lines;
+            if (lines.length) {
+                var line = lines[lines.length - 1];
+                var clipboard = gui.Clipboard.get();
+                var text = clipboard.get('text');
+                var letters = text.split('');
+
+                var cursor = line.find('.cursor');
+                for (var i = 0; i < letters.length; i++) {
+                    var letter = letters[i];
+                    cursor.before(['<span>', letter, '</span>'].join(''));
+                }
+            }
+            e.preventDefault();
+        }
+    });
+    
     this._commands = {
         echo: function(args, terminal){
             terminal.printLine(args.join(' '));
@@ -70,7 +89,7 @@ function Terminal(manager){
                     var node = tree[i];
                     if (node.name == folder) {
                         if (node.tree) {
-                            me._currentFolder = {name: node.name, tree: node.tree, parent: me._currentFolder};
+                            me._currentFolder = {name: [me._currentFolder.name, node.name].join('/'), tree: node.tree, parent: me._currentFolder};
                         } else {
                             terminal.printLine([node.name, 'is not a folder'].join(' '));
                         }
