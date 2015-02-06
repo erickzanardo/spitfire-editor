@@ -10,13 +10,13 @@ function NavigationTree(tabEditor, manager){
 
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
+    manager.registerAction('UPDATE_TREE_FILE', this, '_updateTreeFile');
 }
 
 extend(Widget, NavigationTree, {
     _updateTreeFolders: function(folders) {
         for (var i = 0 ; i < folders.length ; i++) {
             var folder = folders[i];
-            //console.log('a[href="' + folder.parent + '"]');
             var parent = this._element.find('a[href="' + folder.parent + '"]').closest('li.folder').find('ul');
             if (!parent.length) {
                 // This folder goes in the root
@@ -24,6 +24,14 @@ extend(Widget, NavigationTree, {
             }
             parent.append(this._createFolderElement(folder.node));
         }
+    },
+    _updateTreeFile: function(file) {
+            var parent = this._element.find('a[href="' + file.parent + '"]').closest('li.folder').find('ul');
+            if (!parent.length) {
+                // This folder goes in the root
+                parent = this._element.find('ul.navigation-tree');
+            }
+            parent.append(this._createFileElement(file.node));
     },
     openFolder: function(path) {
         var tree = fu.readDirTree(path.split('/'));
@@ -46,7 +54,7 @@ extend(Widget, NavigationTree, {
         });
 
         var te = this._tabEditor;
-        this._element.find('.file > a').click(function() {
+        this._element.on('click', '.file > a', function() {
             var me = $(this);
             var path = me.attr('data-path');
             te.openFile(me.text(), path);
@@ -64,6 +72,13 @@ extend(Widget, NavigationTree, {
         folder.append(list);
         return folder;
     },
+    _createFileElement: function(node) {
+        var file = $('<li class="file"><span></span><a href="#"></a></li>');
+        var a = file.children('a');
+        a.text(node.name);
+        a.attr('data-path', node.path.join('/'));
+        return file;
+    },
     _buildFolder: function(folder_itens, element) {
         for (var i = 0 ; i < folder_itens.length ; i++) {
             var node = folder_itens[i];
@@ -74,11 +89,7 @@ extend(Widget, NavigationTree, {
                 element.append(folder);
                 this._buildFolder(node.tree, folder.children('ul'));
             } else {
-                var file = $('<li class="file"><span></span><a href="#"></a></li>');
-                var a = file.children('a');
-                a.text(node.name);
-                a.attr('data-path', node.path.join('/'));
-                element.append(file);
+                element.append(this._createFileElement(node));
             }
         }
     }

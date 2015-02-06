@@ -62,6 +62,10 @@ FileUtils.prototype.createDirs = function(path, callback) {
         if (err) throw (err);
         else callback(path)
     });
-}
+};
+
+FileUtils.prototype.saveFile = function(path, content, callback) {
+    fs.writeFile(path, content, {encoding: 'utf-8'}, callback);
+};
 
 module.exports = new FileUtils();
