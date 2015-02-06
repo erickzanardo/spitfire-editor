@@ -1,6 +1,7 @@
 var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
+var fu = require('../utils/file-utils.js');
 
 function Terminal(gui, manager){
     Widget.call(this);
@@ -43,22 +44,24 @@ function Terminal(gui, manager){
     });
     
     this._commands = {
-        echo: function(args, terminal){
+        echo: function(args, terminal, done){
             terminal.printLine(args.join(' '));
+            done();
         },
-        openfolder: function(args, terminal) {
+        openfolder: function(args, terminal, done) {
             if (args.length == 0) {
                 terminal.printLine('No folder to open');
             } else {
                 try {
                     me._tree = manager.action('OPEN_FOLDER', args[0]);
-                    me._currentFolder = {name: '~', tree: me._tree};
+                    me._currentFolder = {name: '~', tree: me._tree, path: args[0]};
                 } catch (e) {
                     terminal.printLine(e);
                 }
             }
+            done();
         },
-        ls: function(args, terminal) {
+        ls: function(args, terminal, done) {
             if (me._currentFolder) {
                 var tree = me._currentFolder.tree;
                 var result = [];
@@ -70,12 +73,14 @@ function Terminal(gui, manager){
             } else {
                 terminal.printLine('There is no folder open yet!');
             }
+            done();
         },
-        cd: function(args, terminal) {
+        cd: function(args, terminal, done) {
             var folder = args[0];
 
             if (!me._currentFolder) {
                 terminal.printLine('There is no folder open yet!');
+                done();
                 return;
             }
 
@@ -89,15 +94,72 @@ function Terminal(gui, manager){
                     var node = tree[i];
                     if (node.name == folder) {
                         if (node.tree) {
-                            me._currentFolder = {name: [me._currentFolder.name, node.name].join('/'), tree: node.tree, parent: me._currentFolder};
+                            me._currentFolder = {name: [me._currentFolder.name, node.name].join('/'),
+                                                 tree: node.tree, parent: me._currentFolder,
+                                                 path: node.path};
                         } else {
                             terminal.printLine([node.name, 'is not a folder'].join(' '));
                         }
+                        done();
                         return;
                     }
                 }
                 terminal.printLine([folder, 'not found'].join(' '));
             }
+            done();
+        },
+        mkdir: function(args, terminal, done) {
+            if (!me._currentFolder) {
+                terminal.printLine('There is no folder open yet!');
+                return;
+            }
+
+            var path = args[0];
+            var basePath = me._currentFolder.path;
+            var fullPath = [me._currentFolder.path, '/', path].join('');
+            basePath = basePath.split('/');
+            fu.createDirs(fullPath, function(fullPath) {
+                var folders = path.split('/');
+                var tree = me._tree;
+                var newFolders = [];
+
+                while (folders.length) {
+                    var folder = folders[0];
+                    var found = false;
+                    for (var i = 0; i < tree.length; i++) {
+                        var node = tree[i];
+                        if (node.name == folder) {
+                            // Already created move on
+                            basePath.push(folder);
+                            folders.shift();
+                            tree = node.tree;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        folders.shift();
+                        var parent = basePath.join('/');
+                        basePath.push(folder);
+
+                        var newFolder = {
+                            name: folder,
+                            path: [].concat(basePath),
+                            tree: []
+                        }
+                        newFolders.push({
+                            parent: parent,
+                            node: newFolder
+                        });
+                        tree.push(newFolder);
+                        tree = newFolder.tree;
+                    }
+                }
+
+                manager.action('UPDATE_TREE_FOLDERS', newFolders);
+                terminal.printLine(fullPath + ' created!')
+                done();
+            });
         }
     };
     this.addLine();
@@ -126,12 +188,12 @@ function Terminal(gui, manager){
                 var command = args.shift();
 
                 if (me._commands[command]) {
-                    me._commands[command](args, me);
+                    me._commands[command](args, me, function() {
+                        me.addLine();
+                    });
                 } else {
                     me.printLine('unrecognized command: ' + command);
                 }
-                
-                me.addLine();
             } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
             } else if (w == helperKeys.LEFT_KEY || w == helperKeys.RIGHT_KEY) {

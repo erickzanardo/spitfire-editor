@@ -1,4 +1,5 @@
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 
 function FileUtils() {
 }
@@ -55,5 +56,12 @@ FileUtils.prototype.readDirTree = function(path) {
 FileUtils.prototype.readFile = function(path, callback) {
     fs.readFile(path, 'utf-8', callback);
 };
+
+FileUtils.prototype.createDirs = function(path, callback) {
+    mkdirp(path, function (err) {
+        if (err) throw (err);
+        else callback(path)
+    });
+}
 
 module.exports = new FileUtils();
