@@ -21,29 +21,33 @@ function NavigationTree(tabEditor, manager){
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
             var key = e.which;
-            var current = me.element().find('.navigation-tree li.current');
+            var current = me._treebeard.current();
 
-            if (current.length) {
+            var getElement = function(path) {
+                return me.element().find('a[href="' + path + '"]').closest('li');
+            };
+            
+            if (current) {
+                var cur = getElement(current.path);
                 if (key == helperKeys.DOWN_KEY) {
-                    var next;
-                    if (current.is('.folder') && current.is('.open')) {
-                        var first = current.find('ul li:first');
-                        next = first.length ? first : current.next();
-                    } else {
-                        next = current.next();
-                    }
-                    if (next.length) {
-                        current.removeClass('current');
-                        next.addClass('current');
+                    var next = me._treebeard.next();
+                    if (next) {
+                        var el = getElement(next.path);
+                        cur.removeClass('current');
+                        el.addClass('current');
                     }
                 } else if (key == helperKeys.UP_KEY) {
-                    var prev = current.prev();
-                    if (prev.length) {
-                        current.removeClass('current');
-                        prev.addClass('current');
+                    var prev = me._treebeard.prev();
+                    if (prev) {
+                        var el = getElement(prev.path);
+                        cur.removeClass('current');
+                        el.addClass('current');
                     }
                 } else if (key == helperKeys.ENTER_KEY) {
-                    current.children('a').click();
+                    cur.children('a').click();
+                    if (current.tree) {
+                        current.toggleOpen();
+                    }
                 }
             }
             return false;
@@ -135,7 +139,7 @@ extend(Widget, NavigationTree, {
         var te = this._tabEditor;
         this._element.on('click', '.file > a', function() {
             var me = $(this);
-            var path = me.attr('data-path');
+            var path = me.attr('href');
             te.openFile(me.text(), path);
             return false;
         });
@@ -156,7 +160,7 @@ extend(Widget, NavigationTree, {
         var file = $('<li class="file"><span></span><a href="#"></a></li>');
         var a = file.children('a');
         a.text(node.name);
-        a.attr('data-path', node.path);
+        a.attr('href', node.path);
         return file;
     },
     _buildFolder: function(folder_itens, element) {
