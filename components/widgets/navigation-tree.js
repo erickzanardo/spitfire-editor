@@ -8,6 +8,7 @@ function NavigationTree(tabEditor, manager){
     this._element = $('<div class="navigation-tree-container"><ul class="navigation-tree"></ul></div>');
     this._tabEditor = tabEditor;
     this._focus = false;
+    this._treebeard = null;
 
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
@@ -52,24 +53,47 @@ function NavigationTree(tabEditor, manager){
 }
 
 extend(Widget, NavigationTree, {
-    _updateTreeFolders: function(folders) {
-        for (var i = 0 ; i < folders.length ; i++) {
-            var folder = folders[i];
-            var parent = this._element.find('a[href="' + folder.parent + '"]').closest('li.folder').find('ul');
-            if (!parent.length) {
-                // This folder goes in the root
-                parent = this._element.find('ul.navigation-tree');
+    _updateTreeFolders: function(path) {
+        var treebeard = this._treebeard;
+        var folder = treebeard.find(path);
+
+        var folders = [];
+        folders.push(folder);
+        var parent = treebeard.findParent(path);
+        while (parent) {
+            folders.push(parent);
+            parent = treebeard.findParent(parent.path);
+        }
+
+        while (folders.length) {
+            var folder = folders.pop();
+            if (this._element.find('a[href="' + folder.path + '"]').length) {
+                continue;
             }
-            parent.append(this._createFolderElement(folder.node));
+
+            parent = treebeard.findParent(folder.path);
+
+            var parentList = null;
+            if (parent) {
+                parentList = this._element.find('a[href="' + parent.path + '"]').closest('li.folder').find('ul');
+            } else {
+                // This folder goes in the root
+                parentList = this._element.find('ul.navigation-tree');
+            }
+            parentList.append(this._createFolderElement(folder));
         }
     },
-    _updateTreeFile: function(file) {
-            var parent = this._element.find('a[href="' + file.parent + '"]').closest('li.folder').find('ul');
-            if (!parent.length) {
-                // This folder goes in the root
-                parent = this._element.find('ul.navigation-tree');
-            }
-            parent.append(this._createFileElement(file.node));
+    _updateTreeFile: function(path) {
+        var parentNode = this._treebeard.findParent(path);
+        var parent = null;
+        if (!parentNode) {
+            // This folder goes in the root
+            parent = this._element.find('ul.navigation-tree');
+        } else {
+            parent = this._element.find('a[href="' + parentNode.path + '"]').closest('li.folder').find('ul');
+        }
+        var file = this._treebeard.find(path);
+        parent.append(this._createFileElement(file));
     },
     focus: function(focus) {
         this._focus = focus;
@@ -87,8 +111,8 @@ extend(Widget, NavigationTree, {
         return this._focus;
     },
     openFolder: function(path) {
-        var tree = fu.readDirTree(path.split('/'));
-        this._buildFolder(tree, this._element.find('.navigation-tree'));
+        var treebeard = fu.readDirTree(path);
+        this._buildFolder(treebeard.tree(), this._element.find('.navigation-tree'));
 
         this._element.on('click', '.folder > a', function() {
             var me = $(this);
@@ -116,12 +140,13 @@ extend(Widget, NavigationTree, {
             return false;
         });
 
-        return tree;
+        this._treebeard = treebeard;
+        return treebeard;
     },
     _createFolderElement: function(node) {
         var folder = $('<li class="folder"><span class="glyphicon glyphicon-folder-close"></span><a href="#"></a></li>');
         folder.children('a').text(node.name);
-        folder.children('a').attr('href', node.path.join('/'));
+        folder.children('a').attr('href', node.path);
         var list = $('<ul></ul>');
         list.hide();
         folder.append(list);
@@ -131,7 +156,7 @@ extend(Widget, NavigationTree, {
         var file = $('<li class="file"><span></span><a href="#"></a></li>');
         var a = file.children('a');
         a.text(node.name);
-        a.attr('data-path', node.path.join('/'));
+        a.attr('data-path', node.path);
         return file;
     },
     _buildFolder: function(folder_itens, element) {

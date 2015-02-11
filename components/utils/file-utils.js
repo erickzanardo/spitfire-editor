@@ -1,5 +1,6 @@
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var Ent = require('../../core/libs/ent.js')
 
 function FileUtils() {
 }
@@ -22,11 +23,12 @@ FileUtils.prototype.readDirFiles = function(path, callback) {
     });
 };
 
-FileUtils.prototype.readDirTree = function(path) {
+FileUtils.prototype.readDirTree = function(path, treebeard) {
+    treebeard = treebeard || new Ent(path);
     var tree = [];
-    var dirs = fs.readdirSync(path.join('/'));
-    for (var i = 0 ; i < dirs.length ; i++) {
-        var thisPath = [].concat(path);
+    var dirs = fs.readdirSync(path);
+    for (var i = 0 ; i < dirs.length; i++) {
+        var thisPath = [].concat(path.split('/'));
 
         thisPath.push(dirs[i]);
         var name = thisPath[thisPath.length - 1];
@@ -35,22 +37,15 @@ FileUtils.prototype.readDirTree = function(path) {
         // Jumping hidden folders
         if (name.indexOf('.') == 0) continue;
 
+        var nodePath = thisPath.join('/');
         if (stats.isDirectory()) {
-            var folder = {
-                path: thisPath,
-                name: name,
-                tree: this.readDirTree(thisPath)
-            }
-            tree.push(folder);
+            treebeard.addFolder(nodePath);
+            this.readDirTree(nodePath, treebeard);
         } else {
-             var file = {
-                path: thisPath,
-                name: name
-            }
-            tree.push(file);
+            treebeard.addFile(nodePath);
         }
     }
-    return tree;
+    return treebeard;
 };
 
 FileUtils.prototype.readFile = function(path, callback) {

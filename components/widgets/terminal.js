@@ -8,7 +8,7 @@ function Terminal(gui, manager){
     this._element = $('<div class="se-terminal"></div>');
     this._focus = false;
     this._lines = [];
-    this._tree = [];
+    this._treebeard = [];
     this._currentFolder = null;
     this._history = [];
     this._historyIndex = 0;
@@ -70,8 +70,8 @@ function Terminal(gui, manager){
                 terminal.printLine('No folder to open');
             } else {
                 try {
-                    me._tree = manager.action('OPEN_FOLDER', args[0]);
-                    me._currentFolder = {name: '~', tree: me._tree, path: args[0].split('/')};
+                    me._treebeard = manager.action('OPEN_FOLDER', args[0]);
+                    me._currentFolder = {name: '~', tree: me._treebeard.tree(), path: args[0]};
                 } catch (e) {
                     terminal.printLine(e);
                 }
@@ -134,41 +134,13 @@ function Terminal(gui, manager){
 
             var path = args[0];
             var basePath = me._currentFolder.path;
-            var fullPath = [basePath.join('/'), '/', path].join('');
+            var fullPath = [basePath, path].join('/');
 
+            var treebeard = me._treebeard;
             fu.createDirs(fullPath, function(fullPath) {
-                var folders = path.split('/');
-                var tree = me._tree;
-                var newFolders = [];
+                treebeard.addFolder(fullPath);
 
-                while (folders.length) {
-                    var folder = folders[0];
-                    var node = searchNodeOnTree(tree, folder);
-                    if (node){
-                        // Already created move on
-                        basePath.push(folder);
-                        folders.shift();
-                        tree = node.tree;
-                    } else {
-                        folders.shift();
-                        var parent = basePath.join('/');
-                        basePath.push(folder);
-
-                        var newFolder = {
-                            name: folder,
-                            path: [].concat(basePath),
-                            tree: []
-                        }
-                        newFolders.push({
-                            parent: parent,
-                            node: newFolder
-                        });
-                        tree.push(newFolder);
-                        tree = newFolder.tree;
-                    }
-                }
-
-                manager.action('UPDATE_TREE_FOLDERS', newFolders);
+                manager.action('UPDATE_TREE_FOLDERS', fullPath);
                 terminal.printLine(fullPath + ' created!')
                 done();
             });
@@ -184,18 +156,11 @@ function Terminal(gui, manager){
             if (fileName) {
                 var parent = me._currentFolder.path;
 
-                var basePath = parent.concat(fileName);
-                var fullPath = basePath.join('/');
-                console.log(parent);
+                var fullPath = [parent, fileName].join('/');
                 fu.saveFile(fullPath, '', function() {
-                    var newFile = {
-                        name: fileName,
-                        path: basePath
-                    }
-
-                    manager.action('UPDATE_TREE_FILE', {parent: parent.join('/'), node: newFile});
+                    me._treebeard.addFile(fullPath);
+                    manager.action('UPDATE_TREE_FILE', fullPath);
                     terminal.printLine(['File:', fullPath, 'created!'].join(' '));
-                    me._currentFolder.tree.push(newFile);
                     done();
                 });
             } else {
