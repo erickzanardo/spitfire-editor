@@ -70,6 +70,31 @@ function Terminal(gui, manager){
         exit: function(args, terminal, done) {
             gui.App.quit();
         },
+        mv: function(args, terminal, done) {
+            // TODO this verification can be turned in a function, cause a lot of file commands use this
+            if (me._treebeard) {
+                var path = args[0];
+                var srcPath = buildFullPath(path);
+                var node = me._treebeard.find(srcPath);
+                if (!node) {
+                    terminal.printLine('Can\'t find ' + path);
+                    done();
+                } else {
+                    var destPath = args[1];
+                    if (destPath) {
+                        destPath = buildFullPath(destPath);
+                        fu.move(srcPath, destPath, done);
+                        //manager.action('UPDATE_TREE_MOVE_NODE', node, destPath);
+                        // TODO We need to update treebear!
+                    } else {
+                        done();
+                    }
+                }
+            } else {
+                terminal.printLine('There is no folder open yet!');
+                done();
+            }
+        },
         rm: function(args, terminal, done) {
             if (me._treebeard) {
                 var path = args[0];

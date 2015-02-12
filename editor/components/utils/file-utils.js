@@ -1,7 +1,8 @@
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
-var Ent = require('../../core/libs/ent.js')
+var mv = require('mv');
+var Ent = require('../../core/libs/ent.js');
 
 function FileUtils() {
 }
@@ -70,6 +71,13 @@ FileUtils.prototype.removeFile = function(path, callback) {
 
 FileUtils.prototype.saveFile = function(path, content, callback) {
     fs.writeFile(path, content, {encoding: 'utf-8'}, callback);
+};
+
+FileUtils.prototype.move = function(srcPath, destPath, callback) {
+    mv(srcPath, destPath, {mkdirp: true}, function(err) {
+        if (err) throw err;
+        else callback();
+    });
 };
 
 module.exports = new FileUtils();
