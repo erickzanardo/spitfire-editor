@@ -1,5 +1,6 @@
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var rimraf = require('rimraf');
 var Ent = require('../../core/libs/ent.js')
 
 function FileUtils() {
@@ -57,6 +58,14 @@ FileUtils.prototype.createDirs = function(path, callback) {
         if (err) throw (err);
         else callback(path)
     });
+};
+
+FileUtils.prototype.removeDir = function(path, callback) {
+    rimraf(path, callback);
+};
+
+FileUtils.prototype.removeFile = function(path, callback) {
+    fs.unlink(path, callback);
 };
 
 FileUtils.prototype.saveFile = function(path, content, callback) {

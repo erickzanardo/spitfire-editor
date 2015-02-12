@@ -13,6 +13,7 @@ function NavigationTree(tabEditor, manager){
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
     manager.registerAction('UPDATE_TREE_FILE', this, '_updateTreeFile');
+    manager.registerAction('UPDATE_TREE_REMOVE_NODE', this, '_updateTreeRemoveNode');
 
     var keyManager = manager.keyManager();
     var helperKeys = keyManager.helperKeys;
@@ -57,6 +58,13 @@ function NavigationTree(tabEditor, manager){
 }
 
 extend(Widget, NavigationTree, {
+    _getNodeElement: function(node) {
+        return this._element.find('a[href="' + node.path + '"]');
+    },
+    _updateTreeRemoveNode: function(node) {
+        var el = this._getNodeElement(node);
+        el.closest('li').remove();
+    },
     _updateTreeFolders: function(path) {
         var treebeard = this._treebeard;
         var folder = treebeard.find(path);

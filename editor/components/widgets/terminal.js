@@ -8,7 +8,7 @@ function Terminal(gui, manager){
     this._element = $('<div class="se-terminal"></div>');
     this._focus = false;
     this._lines = [];
-    this._treebeard = [];
+    this._treebeard = null;
     this._currentFolder = null;
     this._history = [];
     this._historyIndex = 0;
@@ -60,9 +60,37 @@ function Terminal(gui, manager){
         return false;
     };
     
+    var buildFullPath = function(path) {
+        var basePath = me._currentFolder.path;
+        var fullPath = [basePath, path].join('/');
+        return fullPath;
+    };
+    
     this._commands = {
         exit: function(args, terminal, done) {
             gui.App.quit();
+        },
+        rm: function(args, terminal, done) {
+            if (me._treebeard) {
+                var path = args[0];
+                var node = me._treebeard.find(buildFullPath(path));
+                if (!node) {
+                    terminal.printLine('Can\'t find ' + path);
+                    done();
+                } else {
+                    var f = node.tree ? 'removeDir' : 'removeFile';
+                    var treebeardRemove = node.tree ? 'removeFolder' : 'removeFile';
+                    console.log(node.path);
+                    fu[f](node.path, function() {
+                        manager.action('UPDATE_TREE_REMOVE_NODE', node);
+                        me._treebeard[treebeardRemove](node.path);
+                        done();
+                    });
+                }
+            } else {
+                terminal.printLine('There is no folder open yet!');
+                done();
+            }
         },
         echo: function(args, terminal, done){
             terminal.printLine(args.join(' '));
