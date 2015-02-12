@@ -97,15 +97,21 @@ SpitfireManager.prototype.showPlainModal = function(title, body) {
     modal.show();
 };
 
-SpitfireManager.prototype.showConfirmModal = function(title, body) {
+SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, onCancel) {
     var modal = new Modal(this._$body);
     modal.title(title);
     modal.body(body);
-    modal.addDefaultButton('Yes', function() {
+    modal.addDefaultButton('No', function() {
         modal.close();
+        if (onCancel) {
+            onCancel();
+        }
     });
     modal.addPrimaryButton('Yes', function() {
         modal.close();
+        if (onConfirm) {
+            onConfirm();
+        }
     });
     modal.show();
 };

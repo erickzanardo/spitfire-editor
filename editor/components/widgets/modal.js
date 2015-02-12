@@ -28,7 +28,7 @@ Modal.prototype = {
         var button = $('<button class="btn"></button>');
         button.text(label);
         button.addClass(type);
-        button = this._element.find('.modal-footer').append(button);
+        this._element.find('.modal-footer').append(button);
         button.click(callback);
     },
     addDefaultButton: function(label, callback) {

@@ -60,13 +60,7 @@ extend(Widget, AceEditor, {
             name: "prev tab",
             bindKey: {win: "Ctrl-W", mac: "Command-Option-W"},
             exec: function(editor) {
-                if (me._changed) {
-                    // Just testing, this must be a question modal and this verification should be done on the x button of the tab too!
-                    // this modal maybe should go the tab-editor.js so we don't reapeat code
-                    manager.showPlainModal('File changed!', 'This file has changes');
-                } else {
-                    tabEditor.closeCurrentTab();
-                }
+                tabEditor.closeCurrentTab();
             }
         });
         this._editor = editor;
@@ -76,6 +70,12 @@ extend(Widget, AceEditor, {
     },
     ace: function() {
         return this._editor;
+    },
+    hasChanges: function() {
+        return this._changed;
+    },
+    saved: function() {
+        this._changed = false;
     }
 });
 

@@ -109,24 +109,39 @@ extend(Widget, TabEditor, {
         }
     },
     closeTab: function(index) {
-        if (index == this._selectedTab) {
-            this.hideSelectedTab();
-        }
-        this._files.splice(index, 1);
-        this._editors.splice(index, 1);
-
-        var editorContainer = this._element.find('.editor-container');
-        var tabContainer = this._element.find('.nav');
-        editorContainer.find('.se-ace-editor').eq(index).remove();
-        tabContainer.find('li').eq(index).remove();
-
-        if (index == this._selectedTab) {
-            this._selectedTab--;
-            if (this._selectedTab > -1) {
-                this.selectTab(this._selectedTab);
+        var me = this;
+        var editor = me._editors[index];
+        var close = function() {
+            if (index == me._selectedTab) {
+                me.hideSelectedTab();
             }
-        } else if (index < this._selectedTab) {
-            this._selectedTab--;
+            me._files.splice(index, 1);
+            me._editors.splice(index, 1);
+
+            var editorContainer = me._element.find('.editor-container');
+            var tabContainer = me._element.find('.nav');
+            editorContainer.find('.se-ace-editor').eq(index).remove();
+            tabContainer.find('li').eq(index).remove();
+
+            if (index == me._selectedTab) {
+                me._selectedTab--;
+                if (me._selectedTab > -1) {
+                    me.selectTab(me._selectedTab);
+                }
+            } else if (index < me._selectedTab) {
+                me._selectedTab--;
+            }
+        }
+
+        if (editor.hasChanges()) {
+            editor.ace().blur();
+            this._manager.
+                showConfirmModal('File has changes',
+                                 'This file has changes. Are you sure you want to close it?',
+                                 close,
+                                 function() { editor.ace().focus(); });
+        } else {
+            close();
         }
     },
     markAsChanged: function(editor) {
@@ -135,7 +150,8 @@ extend(Widget, TabEditor, {
         tabContainer.find('li').eq(index).children('a').addClass('changed');
     },
     closeCurrentTab: function() {
-        this.closeTab(this._selectedTab);
+        var me = this;
+        me.closeTab(me._selectedTab);
     },
     nextTab: function() {
         this.hideSelectedTab();
