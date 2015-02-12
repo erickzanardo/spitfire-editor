@@ -76,6 +76,10 @@ table {
     left: 0;
 }
 
+.se-tab-panel .nav li a.changed {
+    font-style: italic;
+}
+
 .navigation-tree-container {
     position: absolute;
     padding-top: 15px;

@@ -129,6 +129,11 @@ extend(Widget, TabEditor, {
             this._selectedTab--;
         }
     },
+    markAsChanged: function(editor) {
+        var index = this._editors.indexOf(editor);
+        var tabContainer = this._element.find('.nav');
+        tabContainer.find('li').eq(index).children('a').addClass('changed');
+    },
     closeCurrentTab: function() {
         this.closeTab(this._selectedTab);
     },

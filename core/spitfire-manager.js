@@ -75,7 +75,6 @@ SpitfireManager.prototype.focusOn = function(focusable) {
                 } else {
                     f.focus(false);
                 }
-
             }
         }
     }

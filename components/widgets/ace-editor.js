@@ -12,10 +12,12 @@ function AceEditor(gui, manager, tabEditor, tabEditorId, id, filePath){
     this._filePath = filePath;
     this._editor = null;
     this._tabEditor = tabEditor;
+    this._changed = false;
 }
 
 extend(Widget, AceEditor, {
     build: function() {
+        var me = this;
         var ace = this._gui.Window.get().window.ace;
         
         var editor = ace.edit(this._myId);
@@ -25,6 +27,12 @@ extend(Widget, AceEditor, {
 
         var manager = this._manager;
         var tabEditor = this._tabEditor;
+        
+        editor.on('change', function() {
+            me._changed = true;
+            tabEditor.markAsChanged(me);
+        });
+        
         editor.commands.addCommand({
             name: "lose focus",
             bindKey: {win: "esc", mac: "esc"},
