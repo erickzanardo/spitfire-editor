@@ -17,6 +17,9 @@ SpitfireManager = function(mousetrap, localStorage) {
     this._actions = {};
     this._mousetrap = mousetrap;
     this._localStorage = localStorage;
+    this._focusables = [];
+    this._lastFocusable = null;
+    this._withFocus = null;
 };
 
 SpitfireManager.prototype.addInputListener = function(listener) {
@@ -53,6 +56,35 @@ SpitfireManager.prototype.localDb = function() {
             return null;
         }
     };
+};
+
+SpitfireManager.prototype.registerFocusable = function(focusable) {
+    this._focusables.push(focusable);
+};
+
+SpitfireManager.prototype.focusOn = function(focusable) {
+    if (this._withFocus != focusable) {
+        this._lastFocusable = this._withFocus;
+        var focusableIndex = this._focusables.indexOf(focusable);
+        if (focusableIndex != -1) {
+            for (var i = 0 ; i < this._focusables.length ; i++) {
+                var f = this._focusables[i];
+                if (i == focusableIndex) {
+                    f.focus(true);
+                    this._withFocus = f;
+                } else {
+                    f.focus(false);
+                }
+
+            }
+        }
+    }
+};
+
+SpitfireManager.prototype.lastFocus = function() {
+    if (this._lastFocusable) {
+        this.focusOn(this._lastFocusable);
+    }
 };
 
 SpitfireManager.prototype.action = function(key, args) {

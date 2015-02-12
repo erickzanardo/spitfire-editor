@@ -28,7 +28,7 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     mainPanel.add(codePanel, 80);
 
     var rightPanel = new Panel();
-    var tabEditor = new TabEditor(gui, 1);
+    var tabEditor = new TabEditor(gui, 1, manager);
     tabEditor.appendTo(rightPanel);
 
     var leftPanel = new Panel();
@@ -41,13 +41,22 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     var terminal = new Terminal(gui, manager);
     mainPanel.add(terminal, 20);
 
+    manager.registerFocusable(terminal);
+    manager.registerFocusable(navigationTree);
+    manager.registerFocusable(tabEditor);
+
     manager.registerShortcut('esc', function(e) {
-        terminal.focus(!terminal.hasFocus());
+        manager.focusOn(terminal);
         e.preventDefault();
     });
 
     manager.registerShortcut('ctrl+n', function(e) {
-        navigationTree.focus(!terminal.hasFocus());
+        manager.focusOn(navigationTree);
+        e.preventDefault();
+    });
+
+    manager.registerShortcut('ctrl+shift+c', function(e) {
+        manager.focusOn(tabEditor);
         e.preventDefault();
     });
 }
