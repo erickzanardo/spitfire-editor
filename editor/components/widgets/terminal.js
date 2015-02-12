@@ -61,6 +61,9 @@ function Terminal(gui, manager){
     };
     
     this._commands = {
+        exit: function(args, terminal, done) {
+            gui.App.quit();
+        },
         echo: function(args, terminal, done){
             terminal.printLine(args.join(' '));
             done();
