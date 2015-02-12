@@ -8,11 +8,12 @@
       <script type="text/javascript" src="core/libs/bootstap/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ace.js"></script>
       <script type="text/javascript" src="core/libs/ace/src-min-noconflict/ext-modelist.js"></script>
+      <script type="text/javascript" src="components/widgets/modal.js"></script>
       <script type="text/javascript" src="core/spitfire-manager.js"></script>
       <script type="text/javascript" src="core/libs/mousetrap.min.js"></script>
       <script type="text/javascript">
           $(document).ready(function() {
-              var spitfireManager = new SpitfireManager(Mousetrap, localStorage);
+              var spitfireManager = new SpitfireManager(Mousetrap, localStorage, $('#SpitfireContainer'));
 
               var keyManager = spitfireManager.keyManager();
               var helperKeys = keyManager.helperKeys;

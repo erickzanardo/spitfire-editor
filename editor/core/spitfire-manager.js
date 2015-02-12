@@ -12,11 +12,12 @@ var keyManager = {
     }
 };
 
-SpitfireManager = function(mousetrap, localStorage) {
+SpitfireManager = function(mousetrap, localStorage, $body) {
     this._inputListeners = [];
     this._actions = {};
     this._mousetrap = mousetrap;
     this._localStorage = localStorage;
+    this._$body = $body;
     this._focusables = [];
     this._lastFocusable = null;
     this._withFocus = null;
@@ -84,6 +85,29 @@ SpitfireManager.prototype.lastFocus = function() {
     if (this._lastFocusable) {
         this.focusOn(this._lastFocusable);
     }
+};
+
+SpitfireManager.prototype.showPlainModal = function(title, body) {
+    var modal = new Modal(this._$body);
+    modal.title(title);
+    modal.body(body);
+    modal.addPrimaryButton('Ok', function() {
+        modal.close();
+    });
+    modal.show();
+};
+
+SpitfireManager.prototype.showConfirmModal = function(title, body) {
+    var modal = new Modal(this._$body);
+    modal.title(title);
+    modal.body(body);
+    modal.addDefaultButton('Yes', function() {
+        modal.close();
+    });
+    modal.addPrimaryButton('Yes', function() {
+        modal.close();
+    });
+    modal.show();
 };
 
 SpitfireManager.prototype.action = function(key, args) {
