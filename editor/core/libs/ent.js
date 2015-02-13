@@ -192,8 +192,8 @@
         var node = this.find(path);
         if (node) {
             var parent = this.findParent(path);
+            var i = parent.tree.indexOf(node);
             if (parent) {
-                var i = parent.tree.indexOf(node);
                 parent.tree.splice(i, 1);
 
                 delete this._index[node.path];
@@ -218,6 +218,40 @@
             this._removeNode(folder.tree[i].path);
         }
         this._removeNode(path);
+    };
+
+    p.move = function(srcPath, destPath) {
+        var srcNode = this.find(srcPath);
+        var destNode = this.find(destPath);
+
+        if (!srcNode) {
+            throw 'File not found ' + srcPath;
+        }
+
+        // moving folder
+        delete this._index[srcPath];
+        if (destNode) {
+            var parent = this.findParent(srcPath);
+            var tree;
+            // is scrNode has no parent, it is located on root
+            if (parent) {
+                tree = parent.tree;
+            } else {
+                tree = this._tree;
+            }
+            var i = tree.indexOf(srcNode);
+            tree.splice(i, 1);
+
+            srcPath = [destPath, srcNode.name].join('/');
+            srcNode.path = srcPath;
+            destNode.tree.push(srcNode);
+        } else {
+        // Renaming folders
+            var pathSplit = destPath.split('/');
+            srcNode.name = pathSplit[pathSplit.length - 1];
+            srcNode.path = destPath;
+        }
+        this._index[srcNode.path] = srcNode;
     };
 
     module.exports = Ent;
