@@ -75,8 +75,7 @@ FileUtils.prototype.saveFile = function(path, content, callback) {
 
 FileUtils.prototype.move = function(srcPath, destPath, callback) {
     mv(srcPath, destPath, {mkdirp: true}, function(err) {
-        if (err) throw err;
-        else callback();
+        callback(err);
     });
 };
 

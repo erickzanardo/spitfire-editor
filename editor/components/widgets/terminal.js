@@ -66,6 +66,10 @@ function Terminal(gui, manager){
         return fullPath;
     };
     
+    var buildRootNode = function(me) {
+        return {name: '~', tree: me._treebeard.tree(), path: me._treebeard._home};
+    };
+    
     this._commands = {
         exit: function(args, terminal, done) {
             gui.App.quit();
@@ -83,9 +87,15 @@ function Terminal(gui, manager){
                     var destPath = args[1];
                     if (destPath) {
                         destPath = buildFullPath(destPath);
-                        fu.move(srcPath, destPath, done);
-                        //manager.action('UPDATE_TREE_MOVE_NODE', node, destPath);
-                        // TODO We need to update treebear!
+                        fu.move(srcPath, destPath, function(err) {
+                            if (err) {
+                                terminal.printLine(err);
+                            } else {
+                                me._treebeard.move(srcPath, destPath);
+                                //manager.action('UPDATE_TREE_MOVE_NODE', node, destPath);
+                            }
+                            done();
+                        });
                     } else {
                         done();
                     }
@@ -127,7 +137,7 @@ function Terminal(gui, manager){
             } else {
                 try {
                     me._treebeard = manager.action('OPEN_FOLDER', args[0]);
-                    me._currentFolder = {name: '~', tree: me._treebeard.tree(), path: args[0]};
+                    me._currentFolder = buildRootNode(me);
                 } catch (e) {
                     terminal.printLine(e);
                 }
@@ -158,8 +168,12 @@ function Terminal(gui, manager){
             }
 
             if (folder == '..') {
-                if (me._currentFolder.parent) {
-                    me._currentFolder = me._currentFolder.parent;
+                var parent = me._treebeard.findParent(me._currentFolder.path);
+                console.log(parent, me._currentFolder.path);
+                if (parent) {
+                    me._currentFolder = parent;
+                } else {
+                    me._currentFolder = buildRootNode(me);
                 }
             } else {
                 var tree = me._currentFolder.tree;
@@ -167,9 +181,7 @@ function Terminal(gui, manager){
                     var node = tree[i];
                     if (node.name == folder) {
                         if (node.tree) {
-                            me._currentFolder = {name: [me._currentFolder.name, node.name].join('/'),
-                                                 tree: node.tree, parent: me._currentFolder,
-                                                 path: node.path};
+                            me._currentFolder = node;
                         } else {
                             terminal.printLine([node.name, 'is not a folder'].join(' '));
                         }
@@ -337,8 +349,10 @@ extend(Widget, Terminal, {
         var line = $('<p class="line"></p>');
         line.append('<div class="command"><span class="cursor"></span></div>')
         if (this._currentFolder) {
+            var name = this._currentFolder.path;
+            name = name.replace(this._treebeard._home, '~');
             var folderIndicator = $('<span class="folder-indicator"></span>');
-            folderIndicator.text(this._currentFolder.name);
+            folderIndicator.text(name);
             line.prepend(folderIndicator);
         }
         line = line.appendTo(this._element);
