@@ -14,6 +14,7 @@ function NavigationTree(tabEditor, manager){
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
     manager.registerAction('UPDATE_TREE_FILE', this, '_updateTreeFile');
     manager.registerAction('UPDATE_TREE_REMOVE_NODE', this, '_updateTreeRemoveNode');
+    manager.registerAction('UPDATE_TREE_MOVE_NODE', this, '_updateTreeMove');
 
     var keyManager = manager.keyManager();
     var helperKeys = keyManager.helperKeys;
@@ -59,7 +60,22 @@ function NavigationTree(tabEditor, manager){
 
 extend(Widget, NavigationTree, {
     _getNodeElement: function(node) {
-        return this._element.find('a[href="' + node.path + '"]');
+        return this._getPathElement(node.path);
+    },
+    _getPathElement: function(path) {
+        return this._element.find('a[href="' + path + '"]');
+    },
+    _updateTreeMove: function(srcPath, destPath) {
+        var destNode = this._treebeard.find(destPath);
+        // Removing the old node
+        this._getPathElement(srcPath).closest('li').remove();
+
+        // Create the new node
+        var parentNode = this._treebeard.findParent(destPath);
+        var parentElement = this._getNodeElement(parentNode.path);
+        var destElement = this._createFolderElement(destNode);
+        parentElement.children('ul').append(destElement);
+        this._buildFolder(destNode.tree, destElement.children('ul'));
     },
     _updateTreeRemoveNode: function(node) {
         var el = this._getNodeElement(node);

@@ -92,7 +92,7 @@ function Terminal(gui, manager){
                                 terminal.printLine(err);
                             } else {
                                 me._treebeard.move(srcPath, destPath);
-                                //manager.action('UPDATE_TREE_MOVE_NODE', node, destPath);
+                                manager.action('UPDATE_TREE_MOVE_NODE', [srcPath, destPath]);
                             }
                             done();
                         });
@@ -117,7 +117,7 @@ function Terminal(gui, manager){
                     var treebeardRemove = node.tree ? 'removeFolder' : 'removeFile';
                     console.log(node.path);
                     fu[f](node.path, function() {
-                        manager.action('UPDATE_TREE_REMOVE_NODE', node);
+                        manager.action('UPDATE_TREE_REMOVE_NODE', [node]);
                         me._treebeard[treebeardRemove](node.path);
                         done();
                     });
@@ -136,7 +136,7 @@ function Terminal(gui, manager){
                 terminal.printLine('No folder to open');
             } else {
                 try {
-                    me._treebeard = manager.action('OPEN_FOLDER', args[0]);
+                    me._treebeard = manager.action('OPEN_FOLDER', [args[0]]);
                     me._currentFolder = buildRootNode(me);
                 } catch (e) {
                     terminal.printLine(e);
@@ -208,7 +208,7 @@ function Terminal(gui, manager){
             fu.createDirs(fullPath, function(fullPath) {
                 treebeard.addFolder(fullPath);
 
-                manager.action('UPDATE_TREE_FOLDERS', fullPath);
+                manager.action('UPDATE_TREE_FOLDERS', [fullPath]);
                 terminal.printLine(fullPath + ' created!')
                 done();
             });
@@ -227,7 +227,7 @@ function Terminal(gui, manager){
                 var fullPath = [parent, fileName].join('/');
                 fu.saveFile(fullPath, '', function() {
                     me._treebeard.addFile(fullPath);
-                    manager.action('UPDATE_TREE_FILE', fullPath);
+                    manager.action('UPDATE_TREE_FILE', [fullPath]);
                     terminal.printLine(['File:', fullPath, 'created!'].join(' '));
                     done();
                 });

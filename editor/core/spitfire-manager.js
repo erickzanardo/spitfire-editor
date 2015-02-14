@@ -116,7 +116,7 @@ SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, on
     modal.show();
 };
 
-SpitfireManager.prototype.action = function(key, args) {
+SpitfireManager.prototype.action = function(key, arguments) {
     var action = this._actions[key];
-    return action.obj[action.func](args);
+    return action.obj[action.func].apply(action.obj, arguments);
 };
