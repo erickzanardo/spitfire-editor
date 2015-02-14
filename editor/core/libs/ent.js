@@ -192,18 +192,22 @@
         var node = this.find(path);
         if (node) {
             var parent = this.findParent(path);
-            var i = parent.tree.indexOf(node);
+            var tree;
             if (parent) {
-                parent.tree.splice(i, 1);
+                tree = parent.tree;
+            } else {
+                tree = this._tree;
+            }
+            var i = tree.indexOf(node);
+            tree.splice(i, 1);
 
-                delete this._index[node.path];
+            delete this._index[node.path];
 
-                var firstLetter = node.name.substr(0, 1).toLowerCase();
-                var fileIndex = this._fileSearchIndex[firstLetter];
-                if (fileIndex) {
-                    i = fileIndex.indexOf(node);
-                    fileIndex.splice(i, 1);
-                }
+            var firstLetter = node.name.substr(0, 1).toLowerCase();
+            var fileIndex = this._fileSearchIndex[firstLetter];
+            if (fileIndex) {
+                i = fileIndex.indexOf(node);
+                fileIndex.splice(i, 1);
             }
         }
     };
