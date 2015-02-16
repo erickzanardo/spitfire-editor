@@ -72,10 +72,22 @@ extend(Widget, NavigationTree, {
 
         // Create the new node
         var parentNode = this._treebeard.findParent(destPath);
-        var parentElement = this._getNodeElement(parentNode.path);
-        var destElement = this._createFolderElement(destNode);
-        parentElement.children('ul').append(destElement);
-        this._buildFolder(destNode.tree, destElement.children('ul'));
+        
+        var parentElement;
+        if (parentNode) {
+            parentElement = this._getNodeElement(parentNode).closest('li').children('ul');
+        } else {
+            parentElement = this._element.find('.navigation-tree');
+        }
+
+        var destElement;
+        if (destNode.tree) {
+            destElement = this._createFolderElement(destNode);
+            this._buildFolder(destNode.tree, destElement.children('ul'));
+        } else {
+            destElement = this._createFileElement(destNode);
+        }
+        parentElement.append(destElement);
     },
     _updateTreeRemoveNode: function(node) {
         var el = this._getNodeElement(node);

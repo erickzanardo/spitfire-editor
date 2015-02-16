@@ -115,7 +115,6 @@ function Terminal(gui, manager){
                 } else {
                     var f = node.tree ? 'removeDir' : 'removeFile';
                     var treebeardRemove = node.tree ? 'removeFolder' : 'removeFile';
-                    console.log(node.path);
                     fu[f](node.path, function() {
                         manager.action('UPDATE_TREE_REMOVE_NODE', [node]);
                         me._treebeard[treebeardRemove](node.path);
@@ -169,7 +168,6 @@ function Terminal(gui, manager){
 
             if (folder == '..') {
                 var parent = me._treebeard.findParent(me._currentFolder.path);
-                console.log(parent, me._currentFolder.path);
                 if (parent) {
                     me._currentFolder = parent;
                 } else {
