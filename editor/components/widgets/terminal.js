@@ -77,6 +77,13 @@ function Terminal(gui, manager){
             var configObject = manager.config;
             if (configObject[config] === undefined) {
                 terminal.printLine('There is no config named: ' + config);
+            } else {
+                if (args[1]) {
+                    configObject[config] = args[1];
+                    manager.saveConfigs();
+                } else {
+                    terminal.printLine(configObject[config]);
+                }
             }
             done();
         },

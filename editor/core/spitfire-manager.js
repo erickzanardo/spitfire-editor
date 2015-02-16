@@ -21,6 +21,12 @@ SpitfireManager = function(mousetrap, localStorage, $body) {
     this._focusables = [];
     this._lastFocusable = null;
     this._withFocus = null;
+
+    // Load config
+    var config = this.localDb().get('Spitfire_Config');
+    if (config) {
+        this.config = config;
+    }
 };
 
 SpitfireManager.prototype.addInputListener = function(listener) {
@@ -119,6 +125,10 @@ SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, on
 SpitfireManager.prototype.action = function(key, arguments) {
     var action = this._actions[key];
     return action.obj[action.func].apply(action.obj, arguments);
+};
+
+SpitfireManager.prototype.saveConfigs = function() {
+    this.localDb().save('Spitfire_Config', this.config);
 };
 
 SpitfireManager.prototype.config = {
