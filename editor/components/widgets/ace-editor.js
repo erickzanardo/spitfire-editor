@@ -16,10 +16,15 @@ function AceEditor(gui, manager, tabEditor, tabEditorId, id, filePath){
 }
 
 extend(Widget, AceEditor, {
+    content: function() {
+        return this._editor.getSession().getValue();
+    },
+    filePath: function() {
+        return this._filePath;
+    },
     build: function() {
         var me = this;
         var ace = this._gui.Window.get().window.ace;
-        
         var editor = ace.edit(this._myId);
         var modelist = ace.require('ace/ext/modelist');
         var mode = modelist.getModeForPath(this._filePath).mode;
@@ -34,8 +39,8 @@ extend(Widget, AceEditor, {
         });
         
         editor.commands.addCommand({
-            name: "lose focus",
-            bindKey: {win: "esc", mac: "esc"},
+            name: 'lose focus',
+            bindKey: {win: 'esc', mac: 'esc'},
             exec: function(editor) {
                 editor.blur();
                 manager.lastFocus();
@@ -43,24 +48,38 @@ extend(Widget, AceEditor, {
         });
         // TODO Need to test this on a mac!
         editor.commands.addCommand({
-            name: "next tab",
-            bindKey: {win: "Ctrl-Tab", mac: "Command-Option-Tab"},
+            name: 'next tab',
+            bindKey: {win: 'Ctrl-Tab', mac: 'Command-Option-Tab'},
             exec: function(editor) {
                 tabEditor.nextTab();
             }
         });
         editor.commands.addCommand({
-            name: "prev tab",
-            bindKey: {win: "Ctrl-Shift-Tab", mac: "Command-Option-Shift-Tab"},
+            name: 'prev tab',
+            bindKey: {win: 'Ctrl-Shift-Tab', mac: 'Command-Option-Shift-Tab'},
             exec: function(editor) {
                 tabEditor.prevTab();
             }
         });
         editor.commands.addCommand({
-            name: "prev tab",
-            bindKey: {win: "Ctrl-W", mac: "Command-Option-W"},
+            name: 'close tab',
+            bindKey: {win: 'Ctrl-W', mac: 'Command-Option-W'},
             exec: function(editor) {
                 tabEditor.closeCurrentTab();
+            }
+        });
+        editor.commands.addCommand({
+            name: 'save',
+            bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
+            exec: function(editor) {
+                tabEditor.saveCurrentFile();
+            }
+        });
+        editor.commands.addCommand({
+            name: 'save all',
+            bindKey: {win: 'Ctrl-Shift-S', mac: 'Command-Shift-S'},
+            exec: function(editor) {
+                tabEditor.saveAllFiles();
             }
         });
         this._editor = editor;

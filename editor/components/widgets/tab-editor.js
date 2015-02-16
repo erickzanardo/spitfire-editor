@@ -96,7 +96,6 @@ extend(Widget, TabEditor, {
         }
     },
     selectTab: function(index) {
-
         if (index != -1) {
             this._selectedTab = index;
             var editorContainer = this._element.find('.editor-container');
@@ -149,6 +148,11 @@ extend(Widget, TabEditor, {
         var tabContainer = this._element.find('.nav');
         tabContainer.find('li').eq(index).children('a').addClass('changed');
     },
+    markAsUnchanged: function(editor) {
+        var index = this._editors.indexOf(editor);
+        var tabContainer = this._element.find('.nav');
+        tabContainer.find('li').eq(index).children('a').removeClass('changed');
+    },
     closeCurrentTab: function() {
         var me = this;
         me.closeTab(me._selectedTab);
@@ -174,9 +178,24 @@ extend(Widget, TabEditor, {
             this.closeTab(0);
         }
     },
+    _saveEditorContent: function(editor) {
+        var filePath = editor.filePath();
+        var content = editor.content();
+        var me = this;
+        fu.saveFile(filePath, this._manager, content, function() {
+            editor.saved();
+            me.markAsUnchanged(editor);
+        });
+    },
     saveCurrentFile: function() {
+        var editor = this._editors[this._selectedTab];
+        this._saveEditorContent(editor);
     },
     saveAllFiles: function() {
+        for (var i = 0 ; i < this._editors.length ; i++) {
+            var editor = this._editors[i];
+            this._saveEditorContent(editor);
+        }
     }
 });
 
