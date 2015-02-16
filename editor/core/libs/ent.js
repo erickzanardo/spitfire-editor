@@ -232,10 +232,13 @@
             throw 'File not found ' + srcPath;
         }
 
+        var srcParent = this.findParent(srcPath);
+        var destParent = this.findParent(destPath);
+        
         // moving folder
         delete this._index[srcPath];
         if (destNode) {
-            var parent = this.findParent(srcPath);
+            var parent = srcParent;
             var tree;
             // is scrNode has no parent, it is located on root
             if (parent) {
@@ -254,6 +257,12 @@
             var pathSplit = destPath.split('/');
             srcNode.name = pathSplit[pathSplit.length - 1];
             srcNode.path = destPath;
+            if (destParent != srcParent) {
+                var tree = srcParent ? srcParent.tree : this._tree;
+                var i = tree.indexOf(srcNode);
+                tree.splice(i, 1);
+                destParent.tree.push(srcNode);
+            }
         }
         this._index[srcNode.path] = srcNode;
     };
