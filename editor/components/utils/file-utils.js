@@ -50,8 +50,8 @@ FileUtils.prototype.readDirTree = function(path, treebeard) {
     return treebeard;
 };
 
-FileUtils.prototype.readFile = function(path, callback) {
-    fs.readFile(path, 'utf-8', callback);
+FileUtils.prototype.readFile = function(path, manager, callback) {
+    fs.readFile(path, manager.config.charset, callback);
 };
 
 FileUtils.prototype.createDirs = function(path, callback) {
@@ -69,8 +69,8 @@ FileUtils.prototype.removeFile = function(path, callback) {
     fs.unlink(path, callback);
 };
 
-FileUtils.prototype.saveFile = function(path, content, callback) {
-    fs.writeFile(path, content, {encoding: 'utf-8'}, callback);
+FileUtils.prototype.saveFile = function(path, manager, content, callback) {
+    fs.writeFile(path, content, {encoding: manager.config.charset}, callback);
 };
 
 FileUtils.prototype.move = function(srcPath, destPath, callback) {

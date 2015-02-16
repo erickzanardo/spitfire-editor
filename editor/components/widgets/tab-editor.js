@@ -58,7 +58,7 @@ extend(Widget, TabEditor, {
             var tabEditorId = this._id;
             var manager = this._manager;
 
-            fu.readFile(path, function (err, data) {
+            fu.readFile(path, manager, function (err, data) {
                 if (err) throw err;
 
                 me.hideSelectedTab();

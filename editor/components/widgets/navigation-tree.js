@@ -9,6 +9,7 @@ function NavigationTree(tabEditor, manager){
     this._tabEditor = tabEditor;
     this._focus = false;
     this._treebeard = null;
+    this._manager = manager;
 
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');

@@ -120,3 +120,7 @@ SpitfireManager.prototype.action = function(key, arguments) {
     var action = this._actions[key];
     return action.obj[action.func].apply(action.obj, arguments);
 };
+
+SpitfireManager.prototype.config = {
+    charset: 'utf-8'
+};

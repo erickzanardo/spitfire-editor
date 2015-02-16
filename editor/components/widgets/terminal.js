@@ -12,6 +12,7 @@ function Terminal(gui, manager){
     this._currentFolder = null;
     this._history = [];
     this._historyIndex = 0;
+    this._manager = manager;
 
     var savedHistory = manager.localDb().get('COMMAND_HISTORY');
     if (savedHistory) {
@@ -71,6 +72,14 @@ function Terminal(gui, manager){
     };
     
     this._commands = {
+        config: function(args, terminal, done) {
+            var config = args[0];
+            var configObject = manager.config;
+            if (configObject[config] === undefined) {
+                terminal.printLine('There is no config named: ' + config);
+            }
+            done();
+        },
         exit: function(args, terminal, done) {
             gui.App.quit();
         },
@@ -223,7 +232,7 @@ function Terminal(gui, manager){
                 var parent = me._currentFolder.path;
 
                 var fullPath = [parent, fileName].join('/');
-                fu.saveFile(fullPath, '', function() {
+                fu.saveFile(fullPath, me._manager, '', function() {
                     me._treebeard.addFile(fullPath);
                     manager.action('UPDATE_TREE_FILE', [fullPath]);
                     terminal.printLine(['File:', fullPath, 'created!'].join(' '));
