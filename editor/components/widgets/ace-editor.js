@@ -30,6 +30,13 @@ extend(Widget, AceEditor, {
         var mode = modelist.getModeForPath(this._filePath).mode;
         editor.session.setMode(mode);
 
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: false
+        });
+
         var manager = this._manager;
         var tabEditor = this._tabEditor;
         
