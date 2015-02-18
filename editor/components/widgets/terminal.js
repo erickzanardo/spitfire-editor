@@ -318,8 +318,28 @@ function Terminal(gui, manager){
                     }
                     me._historyIndex = 0;
                 } else {
-                    me.printLine('unrecognized command: ' + command);
-                    me.addLine();
+                    var nativeCommands = manager.config.trustedNativeCommands;
+                    if (nativeCommands.indexOf(command) != -1) {
+                        var spawn = require('child_process').spawn,
+                            cmd   = spawn(command, args);
+
+                        cmd.stdout.on('data', function (data) {
+                            console.log(data);
+                          line.find('.cursor').before(data);
+                        });
+
+                        cmd.stderr.on('data', function (data) {
+                            console.log(data);
+                          line.find('.cursor').before(data);
+                        });
+
+                        cmd.on('close', function() {
+                            me.addLine();
+                        });
+                    } else {
+                        me.printLine('unrecognized command: ' + command);
+                        me.addLine();
+                    }
                 }
             } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
