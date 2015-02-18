@@ -132,5 +132,6 @@ SpitfireManager.prototype.saveConfigs = function() {
 };
 
 SpitfireManager.prototype.config = {
-    charset: 'utf-8'
+    charset: 'utf-8',
+    editorFontSize: 14
 };

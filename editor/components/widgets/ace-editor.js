@@ -24,6 +24,8 @@ extend(Widget, AceEditor, {
     },
     build: function() {
         var me = this;
+        var manager = this._manager;
+        var tabEditor = this._tabEditor;
         var ace = this._gui.Window.get().window.ace;
         var editor = ace.edit(this._myId);
         var modelist = ace.require('ace/ext/modelist');
@@ -31,14 +33,12 @@ extend(Widget, AceEditor, {
         editor.session.setMode(mode);
 
         ace.require("ace/ext/language_tools");
+        editor.setFontSize(manager.config.editorFontSize);
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
             enableLiveAutocompletion: false
         });
-
-        var manager = this._manager;
-        var tabEditor = this._tabEditor;
         
         editor.on('change', function() {
             me._changed = true;
@@ -89,6 +89,20 @@ extend(Widget, AceEditor, {
                 tabEditor.saveAllFiles();
             }
         });
+        editor.commands.addCommand({
+            name: 'zoom in',
+            bindKey: {win: 'Ctrl-+', mac: 'Command-+'},
+            exec: function(editor) {
+                tabEditor.zoomIn();
+            }
+        });
+        editor.commands.addCommand({
+            name: 'zoom out',
+            bindKey: {win: 'Ctrl--', mac: 'Command--'},
+            exec: function(editor) {
+                tabEditor.zoomOut();
+            }
+        });
         this._editor = editor;
     },
     text: function(text) {
@@ -102,6 +116,9 @@ extend(Widget, AceEditor, {
     },
     saved: function() {
         this._changed = false;
+    },
+    setFontSize: function(size) {
+        this._editor.setFontSize(size);
     }
 });
 

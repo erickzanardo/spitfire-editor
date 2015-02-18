@@ -196,6 +196,23 @@ extend(Widget, TabEditor, {
             var editor = this._editors[i];
             this._saveEditorContent(editor);
         }
+    },
+    _updateEditorsFont: function() {
+        this._manager.saveConfigs();
+        for (var i = 0 ; i < this._editors.length ; i++) {
+            var editor = this._editors[i];
+            editor.setFontSize(this._manager.config.editorFontSize);
+        }
+    },
+    zoomIn: function() {
+        this._manager.config.editorFontSize++;
+        this._updateEditorsFont();
+    },
+    zoomOut: function() {
+        if (this._manager.config.editorFontSize > 1) {
+            this._manager.config.editorFontSize--;
+            this._updateEditorsFont();
+        }
     }
 });
 
