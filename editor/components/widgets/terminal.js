@@ -75,7 +75,7 @@ function Terminal(gui, manager){
         config: function(args, terminal, done) {
             var config = args[0];
             var configObject = manager.config;
-            console.log(configObject);
+
             if (configObject[config] === undefined) {
                 terminal.printLine('There is no config named: ' + config);
             } else {
@@ -320,17 +320,17 @@ function Terminal(gui, manager){
                 } else {
                     var nativeCommands = manager.config.trustedNativeCommands;
                     if (nativeCommands.indexOf(command) != -1) {
+                        line.append('<pre></pre>')
                         var spawn = require('child_process').spawn,
                             cmd   = spawn(command, args);
 
                         cmd.stdout.on('data', function (data) {
-                            console.log(data);
-                          line.find('.cursor').before(data);
+                            console.log('' + data);
+                          line.children('pre').append('' + data);
                         });
 
                         cmd.stderr.on('data', function (data) {
-                            console.log(data);
-                          line.find('.cursor').before(data);
+                          line.children('pre').append('' + data);
                         });
 
                         cmd.on('close', function() {
