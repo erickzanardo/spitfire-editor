@@ -153,6 +153,7 @@ extend(Widget, NavigationTree, {
     },
     openFolder: function(path) {
         var treebeard = fu.readDirTree(path);
+        this._element.find('.navigation-tree').children().remove();
         this._buildFolder(treebeard.tree(), this._element.find('.navigation-tree'));
 
         this._element.on('click', '.folder > a', function() {
