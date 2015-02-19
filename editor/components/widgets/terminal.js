@@ -273,6 +273,27 @@ function Terminal(gui, manager){
     var keyManager = manager.keyManager();
     var helperKeys = keyManager.helperKeys;
     
+    var parseCommand = function(command) {
+        var result = [];
+        var currentChar = '';
+        var currentWord = '';
+        var opennedQuote = false;
+        for (var i = 0; i < command.length; i++) {
+            currentChar = command[i];
+            if (currentChar == '"') {
+                opennedQuote = !opennedQuote;
+            }
+            if (!opennedQuote && currentChar == ' ') {
+                result.push(currentWord);
+                currentWord = '';
+            } else {
+                currentWord += currentChar;
+            }
+        }
+        result.push(currentWord);
+        return result;
+    };
+  
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
             var w = e.which;
@@ -288,7 +309,7 @@ function Terminal(gui, manager){
             if (w == helperKeys.ENTER_KEY) {
                 line.find('.cursor').removeClass('cursor');
                 var commandLine = line.find('.command').text();
-                var split = commandLine.split(' ');
+                var split = parseCommand(commandLine);
                 var args = [];
                 for (var i = 0 ; i < split.length ; i++) {
                     var arg = split[i];
