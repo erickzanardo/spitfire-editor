@@ -11,6 +11,31 @@ function NavigationTree(tabEditor, manager){
     this._treebeard = null;
     this._manager = manager;
 
+    this._element.on('click', '.folder > a', function() {
+        var me = $(this);
+
+        var span = me.prev();
+        if (span.is('.glyphicon-folder-close')) {
+            span.removeClass('glyphicon-folder-close');
+            span.addClass('glyphicon-folder-open');
+            span.closest('li').addClass('open');
+            me.next().slideDown();
+        } else {
+            span.removeClass('glyphicon-folder-open');
+            span.addClass('glyphicon-folder-close');
+            span.closest('li').removeClass('open');
+            me.next().slideUp();
+        }
+        return false;
+    });
+
+    this._element.on('click', '.file > a', function() {
+        var me = $(this);
+        var path = me.attr('href');
+        tabEditor.openFile(me.text(), path);
+        return false;
+    });
+    
     manager.registerAction('OPEN_FOLDER', this, 'openFolder');
     manager.registerAction('UPDATE_TREE_FOLDERS', this, '_updateTreeFolders');
     manager.registerAction('UPDATE_TREE_FILE', this, '_updateTreeFile');
@@ -158,33 +183,6 @@ extend(Widget, NavigationTree, {
         var treebeard = fu.readDirTree(path);
         this._element.find('.navigation-tree').children().remove();
         this._buildFolder(treebeard.tree(), this._element.find('.navigation-tree'));
-
-        this._element.on('click', '.folder > a', function() {
-            var me = $(this);
-            
-            var span = me.prev();
-            if (span.is('.glyphicon-folder-close')) {
-                span.removeClass('glyphicon-folder-close');
-                span.addClass('glyphicon-folder-open');
-                span.closest('li').addClass('open');
-                me.next().slideDown();
-            } else {
-                span.removeClass('glyphicon-folder-open');
-                span.addClass('glyphicon-folder-close');
-                span.closest('li').removeClass('open');
-                me.next().slideUp();
-            }
-            return false;
-        });
-
-        var te = this._tabEditor;
-        this._element.on('click', '.file > a', function() {
-            var me = $(this);
-            var path = me.attr('href');
-            te.openFile(me.text(), path);
-            return false;
-        });
-
         this._treebeard = treebeard;
         return treebeard;
     },
