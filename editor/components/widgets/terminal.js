@@ -86,7 +86,6 @@ function Terminal(gui, manager){
                         if (args.indexOf('-a') != -1) {
                             var i = args.indexOf('-a');
                             args.splice(i, 1);
-                            console.log(args)
                             configObject[config].push(args[0]);
                         } else if(args.indexOf('-d') != -1) {
                             var i = args.indexOf('-d');
@@ -297,13 +296,10 @@ function Terminal(gui, manager){
                         args.push(arg);
                     }
                 }
-                
+
                 var command = args.shift();
 
-                if (me._commands[command]) {
-                    me._commands[command](args, me, function() {
-                        me.addLine();
-                    });
+                var addCommandToHistory = function() {
                     var history = line.find('.command').html();
                     var found = false;
                     for (var i = 0 ; i < me._history.length ; i++) {
@@ -317,16 +313,23 @@ function Terminal(gui, manager){
                         manager.localDb().save('COMMAND_HISTORY', me._history);
                     }
                     me._historyIndex = 0;
+                };
+              
+                if (me._commands[command]) {
+                    me._commands[command](args, me, function() {
+                        me.addLine();
+                    });
+                    addCommandToHistory();
                 } else {
                     var nativeCommands = manager.config.trustedNativeCommands;
                     if (nativeCommands.indexOf(command) != -1) {
                         if (me._currentFolder) {
-                          line.append('<pre></pre>')
+                          addCommandToHistory();
+                          line.append('<pre></pre>');
                           var spawn = require('child_process').spawn,
                               cmd   = spawn(command, args, {cwd: me._currentFolder.path});
 
                           cmd.stdout.on('data', function (data) {
-                              console.log('' + data);
                             line.children('pre').append('' + data);
                           });
 
