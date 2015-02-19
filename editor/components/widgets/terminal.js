@@ -388,6 +388,7 @@ function Terminal(gui, manager){
                 if (history.length) {
                     var command = history[i];
                     line.find('.command').html(command);
+                    line.find('.command').children('span:last').addClass('cursor');
 
                     if (w == helperKeys.UP_KEY) {
                         if (i == history.length - 1) {
