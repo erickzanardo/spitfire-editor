@@ -170,7 +170,7 @@ function Terminal(gui, manager){
                 try {
                     // TODO this is quite confusing :(
                     me._treebeard = manager.action('OPEN_FOLDER', [args[0]]);
-                    manager.action('SET_FOLDER', me._treebeard);
+                    manager.action('SET_FOLDER', [me._treebeard]);
                     me._currentFolder = buildRootNode(me);
                 } catch (e) {
                     terminal.printLine(e);

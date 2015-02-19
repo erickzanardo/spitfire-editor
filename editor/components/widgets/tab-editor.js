@@ -45,10 +45,12 @@ extend(Widget, TabEditor, {
         var element = this._element;
 
         var openedFiles = element.find(['a[href="', path, '"]'].join(''));
+        var manager = this._manager;
         if (openedFiles.length) {
             me.hideSelectedTab();
             var i = openedFiles.parent().index();
             me.selectTab(i);
+            manager.focusOn(me);
         } else {
             var gui = this._gui;
 
@@ -56,7 +58,6 @@ extend(Widget, TabEditor, {
             var editors = this._editors;
 
             var tabEditorId = this._id;
-            var manager = this._manager;
 
             fu.readFile(path, manager, function (err, data) {
                 if (err) throw err;

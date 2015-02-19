@@ -22,6 +22,7 @@ SpitfireManager = function(mousetrap, localStorage, $body) {
     this._focusables = [];
     this._lastFocusable = null;
     this._withFocus = null;
+    this._focusHistoryExclusion = [];
 
     // Load config
     var config = this.localDb().get('Spitfire_Config');
@@ -66,13 +67,18 @@ SpitfireManager.prototype.localDb = function() {
     };
 };
 
-SpitfireManager.prototype.registerFocusable = function(focusable) {
+SpitfireManager.prototype.registerFocusable = function(focusable, excludeFromHistory) {
     this._focusables.push(focusable);
+    if (excludeFromHistory) {
+        this._focusHistoryExclusion.push(focusable);
+    }
 };
 
 SpitfireManager.prototype.focusOn = function(focusable) {
     if (this._withFocus != focusable) {
-        this._lastFocusable = this._withFocus;
+        if (this._focusHistoryExclusion.indexOf(this._withFocus) == -1) {
+            this._lastFocusable = this._withFocus;
+        }
         var focusableIndex = this._focusables.indexOf(focusable);
         if (focusableIndex != -1) {
             for (var i = 0 ; i < this._focusables.length ; i++) {
@@ -93,7 +99,9 @@ SpitfireManager.prototype.lastFocus = function() {
         this.focusOn(this._lastFocusable);
     } else {
         this._withFocus.focus(false);
-        this._lastFocusable = this._withFocus;
+        if (this._focusHistoryExclusion.indexOf(this._withFocus) == -1) {
+            this._lastFocusable = this._withFocus;
+        }
         this._withFocus = null;
     }
 };

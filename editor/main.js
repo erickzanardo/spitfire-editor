@@ -42,10 +42,10 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     var terminal = new Terminal(gui, manager);
     mainPanel.add(terminal, 20);
 
-    var fileSearch = new FileSearch(manager);
+    var fileSearch = new FileSearch(manager, tabEditor);
     fileSearch.appendTo(root);
 
-    manager.registerFocusable(fileSearch);
+    manager.registerFocusable(fileSearch, true);
     manager.registerFocusable(terminal);
     manager.registerFocusable(navigationTree);
     manager.registerFocusable(tabEditor);
