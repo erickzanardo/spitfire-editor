@@ -54,7 +54,6 @@ table {
 }
 
 .se-panel {
-    border: 1px solid #000;
     position: relative;
     overflow: auto;
 }
@@ -135,6 +134,7 @@ table {
     margin-left: 15px;
     color: #fff;
     font-weight: bold;
+    font-family: monospace;
 }
 
 .se-terminal .line .command {
@@ -161,4 +161,8 @@ table {
     left: 5px;
     right: 5px;
     display: none;
+}
+
+.se-file-search table tr td span {
+    margin-left: 15px;
 }

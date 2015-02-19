@@ -31,6 +31,7 @@ extend(Widget, AceEditor, {
         var modelist = ace.require('ace/ext/modelist');
         var mode = modelist.getModeForPath(this._filePath).mode;
         editor.session.setMode(mode);
+        editor.setTheme("ace/theme/tomorrow_night");
 
         ace.require("ace/ext/language_tools");
         editor.setFontSize(manager.config.editorFontSize);
