@@ -320,22 +320,27 @@ function Terminal(gui, manager){
                 } else {
                     var nativeCommands = manager.config.trustedNativeCommands;
                     if (nativeCommands.indexOf(command) != -1) {
-                        line.append('<pre></pre>')
-                        var spawn = require('child_process').spawn,
-                            cmd   = spawn(command, args);
+                        if (me._currentFolder) {
+                          line.append('<pre></pre>')
+                          var spawn = require('child_process').spawn,
+                              cmd   = spawn(command, args, {cwd: me._currentFolder.path});
 
-                        cmd.stdout.on('data', function (data) {
-                            console.log('' + data);
-                          line.children('pre').append('' + data);
-                        });
+                          cmd.stdout.on('data', function (data) {
+                              console.log('' + data);
+                            line.children('pre').append('' + data);
+                          });
 
-                        cmd.stderr.on('data', function (data) {
-                          line.children('pre').append('' + data);
-                        });
+                          cmd.stderr.on('data', function (data) {
+                            line.children('pre').append('' + data);
+                          });
 
-                        cmd.on('close', function() {
-                            me.addLine();
-                        });
+                          cmd.on('close', function() {
+                              me.addLine();
+                          });
+                        } else {
+                          terminal.printLine('There is no folder open yet!');
+                          me.addLine();
+                        }
                     } else {
                         me.printLine('unrecognized command: ' + command);
                         me.addLine();
