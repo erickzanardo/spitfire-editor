@@ -23,6 +23,9 @@ function NavigationTree(tabEditor, manager){
     var me = this;
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
+            if (!me._treebeard) {
+                return;
+            }
             var key = e.which;
             var current = me._treebeard.current();
 
