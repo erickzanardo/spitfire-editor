@@ -91,6 +91,10 @@ SpitfireManager.prototype.focusOn = function(focusable) {
 SpitfireManager.prototype.lastFocus = function() {
     if (this._lastFocusable) {
         this.focusOn(this._lastFocusable);
+    } else {
+        this._withFocus.focus(false);
+        this._lastFocusable = this._withFocus;
+        this._withFocus = null;
     }
 };
 
