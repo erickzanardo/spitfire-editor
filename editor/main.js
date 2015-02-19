@@ -4,6 +4,7 @@ var NavigationTree = require('./components/widgets/navigation-tree.js');
 var TabEditor = require('./components/widgets/tab-editor.js');
 var AceEditor = require('./components/widgets/ace-editor.js');
 var Terminal = require('./components/widgets/terminal.js');
+var FileSearch = require('./components/widgets/file-search.js');
 
 var $ = require('./core/libs/jquery-2.1.3.min.js');
 
@@ -41,9 +42,18 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     var terminal = new Terminal(gui, manager);
     mainPanel.add(terminal, 20);
 
+    var fileSearch = new FileSearch(manager);
+    fileSearch.appendTo(root);
+
+    manager.registerFocusable(fileSearch);
     manager.registerFocusable(terminal);
     manager.registerFocusable(navigationTree);
     manager.registerFocusable(tabEditor);
+
+    manager.registerShortcut('ctrl+shift+o', function(e) {
+        manager.focusOn(fileSearch);
+        e.preventDefault();
+    });
 
     manager.registerShortcut('esc', function(e) {
         manager.focusOn(terminal);

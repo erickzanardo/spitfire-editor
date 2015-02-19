@@ -168,7 +168,9 @@ function Terminal(gui, manager){
                 terminal.printLine('No folder to open');
             } else {
                 try {
+                    // TODO this is quite confusing :(
                     me._treebeard = manager.action('OPEN_FOLDER', [args[0]]);
+                    manager.action('SET_FOLDER', me._treebeard);
                     me._currentFolder = buildRootNode(me);
                 } catch (e) {
                     terminal.printLine(e);

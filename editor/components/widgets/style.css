@@ -153,3 +153,11 @@ table {
     color: #A3A3A0;
     margin-right: 10px;
 }
+
+.se-file-search {
+    position: fixed;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    display: none;
+}

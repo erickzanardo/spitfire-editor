@@ -8,7 +8,8 @@ var keyManager = {
         RIGHT_KEY: 39,
         DOWN_KEY: 40,
         TAB_KEY: 9,
-        ENTER_KEY: 13
+        ENTER_KEY: 13,
+        ESC_KEY: 27
     }
 };
 
