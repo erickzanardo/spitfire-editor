@@ -34,6 +34,11 @@ extend(Widget, AceEditor, {
         editor.setTheme("ace/theme/tomorrow_night");
 
         ace.require("ace/ext/language_tools");
+        
+        editor.on('focus', function() {
+           me._manager.focusOn(me._tabEditor); 
+        });
+        
         editor.setFontSize(manager.config.editorFontSize);
         editor.setOptions({
             enableBasicAutocompletion: true,

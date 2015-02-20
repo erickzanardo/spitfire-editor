@@ -65,6 +65,11 @@ EditorEntry.prototype.init = function(gui, root, manager) {
         e.preventDefault();
     });
 
+    manager.registerShortcut('ctrl+e', function(e) {
+        manager.focusOn(tabEditor);
+        e.preventDefault();
+    });
+
     manager.registerShortcut('ctrl+shift+c', function(e) {
         manager.focusOn(tabEditor);
         e.preventDefault();
