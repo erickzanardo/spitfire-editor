@@ -39,7 +39,9 @@ extend(Widget, AceEditor, {
            me._manager.focusOn(me._tabEditor); 
         });
         
+        editor.setOption('showInvisibles', manager.config.showWhitespaces === 'true');
         editor.setFontSize(manager.config.editorFontSize);
+
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
