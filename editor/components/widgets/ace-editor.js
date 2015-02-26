@@ -41,6 +41,9 @@ extend(Widget, AceEditor, {
         
         editor.setOption('showInvisibles', manager.config.showWhitespaces === 'true');
         editor.setFontSize(manager.config.editorFontSize);
+        var tabSize = parseInt(manager.config.tabSize);
+        tabSize = isNaN(tabSize) ? 4 : tabSize;
+        editor.getSession().setTabSize(tabSize);
 
         editor.setOptions({
             enableBasicAutocompletion: true,

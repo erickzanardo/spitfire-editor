@@ -1,5 +1,5 @@
 {
   "name": "SpitfireEditor",
   "main": "editor.html",
-  "window": { "toolbar": true  }
+  "window": { "toolbar": false }
 }

@@ -148,5 +148,6 @@ SpitfireManager.prototype.config = {
     charset: 'utf-8',
     editorFontSize: 14,
     trustedNativeCommands: [],
-    showWhitespaces: true
+    showWhitespaces: true,
+    tabSize: 4
 };
