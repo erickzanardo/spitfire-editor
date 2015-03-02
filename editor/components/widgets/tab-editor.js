@@ -6,6 +6,7 @@ var fu = require('../utils/file-utils.js');
 
 function TabEditor(gui, id, manager){
     Widget.call(this);
+    this._editorCount = 0;
     this._element = $('<div class="se-tab-panel"><ul class="nav nav-tabs"></li></ul><div class="editor-container"></div></div>');
     this._gui = gui;
     this._files = [];
@@ -67,7 +68,7 @@ extend(Widget, TabEditor, {
                 var editorContainer = element.find('.editor-container');
                 var tabContainer = element.find('.nav');
 
-                var aceEditor = new AceEditor(gui, me._manager, me, tabEditorId, editors.length, path);
+                var aceEditor = new AceEditor(gui, me._manager, me, tabEditorId, me._editorCount++, path);
                 editorContainer.append(aceEditor.element());
                 aceEditor.text(data);
                 aceEditor.build();
@@ -125,8 +126,8 @@ extend(Widget, TabEditor, {
 
             if (index == me._selectedTab) {
                 me._selectedTab--;
-                if (me._selectedTab > -1) {
-                    me.selectTab(me._selectedTab);
+                if (me._files.length && me._selectedTab != -1) {
+                  me.selectTab(me._selectedTab);
                 }
             } else if (index < me._selectedTab) {
                 me._selectedTab--;
