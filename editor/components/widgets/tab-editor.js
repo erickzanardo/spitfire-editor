@@ -125,9 +125,12 @@ extend(Widget, TabEditor, {
             tabContainer.find('li').eq(index).remove();
 
             if (index == me._selectedTab) {
-                me._selectedTab--;
-                if (me._files.length && me._selectedTab != -1) {
-                  me.selectTab(me._selectedTab);
+                if (me._selectedTab == me._editors.length) {
+                    me._selectedTab = me._editors.length - 1;
+                }
+
+                if (me._selectedTab != -1) {
+                    me.selectTab(me._selectedTab);
                 }
             } else if (index < me._selectedTab) {
                 me._selectedTab--;
