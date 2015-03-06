@@ -5,7 +5,7 @@ var $ = require('../../core/libs/jquery-2.1.3.min.js');
 function AceEditor(gui, manager, tabEditor, tabEditorId, id, filePath){
     Widget.call(this);
     this._myId = ['editor', tabEditorId, id].join('_');
-    this._element = $('<div class="se-ace-editor"></div>');
+    this._element = $('<div class="se-ace-editor"></div><div class="se-ace-editor-fileame"></div>');
     this._element.attr('id', this._myId);
     this._gui = gui;
     this._manager = manager;
@@ -117,7 +117,10 @@ extend(Widget, AceEditor, {
         this._editor = editor;
     },
     text: function(text) {
-        this._element.text(text);
+        this._element.first().text(text);
+    },
+    filename: function(filename) {
+        this._element.last().text(filename);
     },
     ace: function() {
         return this._editor;

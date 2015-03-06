@@ -71,6 +71,7 @@ extend(Widget, TabEditor, {
                 var aceEditor = new AceEditor(gui, me._manager, me, tabEditorId, me._editorCount++, path);
                 editorContainer.append(aceEditor.element());
                 aceEditor.text(data);
+                aceEditor.filename(path);
                 aceEditor.build();
 
                 var tab = $('<li role="presentation"><a href="#"><span class="glyphicon glyphicon-remove"></span></a>');
@@ -91,7 +92,7 @@ extend(Widget, TabEditor, {
         if (index != -1) {
             var editorContainer = this._element.find('.editor-container');
             var tabContainer = this._element.find('.nav');
-            editorContainer.find('.se-ace-editor').eq(index).hide();
+            this._editors[index].element().hide();
 
             tabContainer.find('li').eq(index).removeClass('active');
             this._editors[index].ace().blur();
@@ -103,7 +104,7 @@ extend(Widget, TabEditor, {
             var editorContainer = this._element.find('.editor-container');
             var tabContainer = this._element.find('.nav');
 
-            editorContainer.find('.se-ace-editor').eq(index).show();
+            this._editors[index].element().show();
             tabContainer.find('li').eq(index).addClass('active');
 
             this._editors[index].ace().focus();

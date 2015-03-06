@@ -71,8 +71,19 @@ table {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: 0;
+    bottom: 20px;
     left: 0;
+}
+
+#SpitfireContainer .se-ace-editor-fileame {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    left: 0;
+    height: 15px;
+    font-style: italic;
+    color: #fff;
+    text-align: center;
 }
 
 .se-tab-panel .nav li a.changed {
