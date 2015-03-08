@@ -23,12 +23,20 @@ SpitfireManager = function(mousetrap, localStorage, $body) {
     this._lastFocusable = null;
     this._withFocus = null;
     this._focusHistoryExclusion = [];
+    this._gui = null;
 
     // Load config
     var config = this.localDb().get('Spitfire_Config');
     if (config) {
         this.config = config;
     }
+};
+
+SpitfireManager.prototype.gui = function(gui) {
+    if (gui) {
+        this._gui = gui;
+    }
+    return this._gui;
 };
 
 SpitfireManager.prototype.addInputListener = function(listener) {

@@ -2,6 +2,7 @@ var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 var fu = require('../utils/file-utils.js');
+var rk = require('rekuire');
 
 function Terminal(gui, manager){
     Widget.call(this);
@@ -51,225 +52,24 @@ function Terminal(gui, manager){
         }
     });
     
-    var searchNodeOnTree = function(tree, name) {
-        for (var i = 0; i < tree.length; i++) {
-            var node = tree[i];
-            if (node.name == name) {
-                return node;
-            }
-        }
-        return false;
-    };
-    
-    var buildFullPath = function(path) {
-        var basePath = me._currentFolder.path;
-        var fullPath = [basePath, path].join('/');
-        return fullPath;
-    };
-    
-    var buildRootNode = function(me) {
-        return {name: '~', tree: me._treebeard.tree(), path: me._treebeard._home};
-    };
-    
-    this._commands = {
-        config: function(args, terminal, done) {
-            var config = args[0];
-            var configObject = manager.config;
-
-            if (configObject[config] === undefined) {
-                terminal.printLine('There is no config named: ' + config);
-            } else {
-                // Removing the config key from the args
-                args.splice(0, 1);
-                if (args.length) {
-                    if (typeof(configObject[config]) === 'object') {
-                        if (args.indexOf('-a') != -1) {
-                            var i = args.indexOf('-a');
-                            args.splice(i, 1);
-                            configObject[config].push(args[0]);
-                        } else if(args.indexOf('-d') != -1) {
-                            var i = args.indexOf('-d');
-                            args.splice(i, 1);
-
-                            i = configObject[config].indexOf(args[0]);
-                            configObject[config].splice(i, 1);
-                        }
-                    } else {
-                        configObject[config] = args[0];
-                    }
-                    manager.saveConfigs();
-                } else {
-                    terminal.printLine(configObject[config]);
-                }
-            }
-            done();
-        },
-        exit: function(args, terminal, done) {
-            gui.App.quit();
-        },
-        mv: function(args, terminal, done) {
-            // TODO this verification can be turned in a function, cause a lot of file commands use this
-            if (me._treebeard) {
-                var path = args[0];
-                var srcPath = buildFullPath(path);
-                var node = me._treebeard.find(srcPath);
-                if (!node) {
-                    terminal.printLine('Can\'t find ' + path);
-                    done();
-                } else {
-                    var destPath = args[1];
-                    if (destPath) {
-                        destPath = buildFullPath(destPath);
-                        fu.move(srcPath, destPath, function(err) {
-                            if (err) {
-                                terminal.printLine(err);
-                            } else {
-                                me._treebeard.move(srcPath, destPath);
-                                manager.action('UPDATE_TREE_MOVE_NODE', [srcPath, destPath]);
-                            }
-                            done();
-                        });
-                    } else {
-                        done();
-                    }
-                }
-            } else {
-                terminal.printLine('There is no folder open yet!');
-                done();
-            }
-        },
-        rm: function(args, terminal, done) {
-            if (me._treebeard) {
-                var path = args[0];
-                var node = me._treebeard.find(buildFullPath(path));
-                if (!node) {
-                    terminal.printLine('Can\'t find ' + path);
-                    done();
-                } else {
-                    var f = node.tree ? 'removeDir' : 'removeFile';
-                    var treebeardRemove = node.tree ? 'removeFolder' : 'removeFile';
-                    fu[f](node.path, function() {
-                        manager.action('UPDATE_TREE_REMOVE_NODE', [node]);
-                        me._treebeard[treebeardRemove](node.path);
-                        done();
-                    });
-                }
-            } else {
-                terminal.printLine('There is no folder open yet!');
-                done();
-            }
-        },
-        echo: function(args, terminal, done){
-            terminal.printLine(args.join(' '));
-            done();
-        },
-        openfolder: function(args, terminal, done) {
-            if (args.length == 0) {
-                terminal.printLine('No folder to open');
-            } else {
-                try {
-                    // TODO this is quite confusing :(
-                    me._treebeard = manager.action('OPEN_FOLDER', [args[0]]);
-                    manager.action('SET_FOLDER', [me._treebeard]);
-                    me._currentFolder = buildRootNode(me);
-                } catch (e) {
-                    terminal.printLine(e);
-                }
-            }
-            done();
-        },
-        ls: function(args, terminal, done) {
-            if (me._currentFolder) {
-                var tree = me._currentFolder.tree;
-                var result = [];
-                for (var i = 0 ; i < tree.length ; i++) {
-                    var node = tree[i];
-                    result.push(node.name);
-                }
-                terminal.printLine(result.join(' '));
-            } else {
-                terminal.printLine('There is no folder open yet!');
-            }
-            done();
-        },
-        cd: function(args, terminal, done) {
-            var folder = args[0];
-
-            if (!me._currentFolder) {
-                terminal.printLine('There is no folder open yet!');
-                done();
-                return;
-            }
-
-            if (folder == '..') {
-                var parent = me._treebeard.findParent(me._currentFolder.path);
-                if (parent) {
-                    me._currentFolder = parent;
-                } else {
-                    me._currentFolder = buildRootNode(me);
-                }
-            } else {
-                var tree = me._currentFolder.tree;
-                for (var i = 0 ; i < tree.length ; i++) {
-                    var node = tree[i];
-                    if (node.name == folder) {
-                        if (node.tree) {
-                            me._currentFolder = node;
-                        } else {
-                            terminal.printLine([node.name, 'is not a folder'].join(' '));
-                        }
-                        done();
-                        return;
-                    }
-                }
-                terminal.printLine([folder, 'not found'].join(' '));
-            }
-            done();
-        },
-        mkdir: function(args, terminal, done) {
-            if (!me._currentFolder) {
-                terminal.printLine('There is no folder open yet!');
-                done();
-                return;
-            }
-
-            var path = args[0];
-            var basePath = me._currentFolder.path;
-            var fullPath = [basePath, path].join('/');
-
-            var treebeard = me._treebeard;
-            fu.createDirs(fullPath, function(fullPath) {
-                treebeard.addFolder(fullPath);
-
-                manager.action('UPDATE_TREE_FOLDERS', [fullPath]);
-                terminal.printLine(fullPath + ' created!')
-                done();
-            });
-        },
-        touch: function(args, terminal, done) {
-            if (!me._currentFolder) {
-                terminal.printLine('There is no folder open yet!');
-                done();
-                return;
-            }
-
-            var fileName = args[0];
-            if (fileName) {
-                var parent = me._currentFolder.path;
-
-                var fullPath = [parent, fileName].join('/');
-                fu.saveFile(fullPath, me._manager, '', function() {
-                    me._treebeard.addFile(fullPath);
-                    manager.action('UPDATE_TREE_FILE', [fullPath]);
-                    terminal.printLine(['File:', fullPath, 'created!'].join(' '));
-                    done();
-                });
-            } else {
-                terminal.printLine('You must inform a file name');
-                done();
-            }
-        }
-    };
+    var commands = [
+        'config.js',
+        'exit.js',
+        'move.js',
+        'remove.js',
+        'echo.js',
+        'openfolder.js',
+        'ls.js',
+        'cd.js',
+        'mkdir.js',
+        'touch.js'
+    ];
+    this._commands = {};
+    // register commands
+    for (var i = 0; i < commands.length; i++) {
+        var command = rk('components/widgets/terminal-cli/' + commands[i]);
+        this._commands[command.name] = command.func;
+    }
     this.addLine();
 
     var keyManager = manager.keyManager();
@@ -339,7 +139,7 @@ function Terminal(gui, manager){
                 };
               
                 if (me._commands[command]) {
-                    me._commands[command](args, me, function() {
+                    me._commands[command](args, me, manager, function() {
                         me.addLine();
                     });
                     addCommandToHistory();
@@ -418,6 +218,23 @@ function Terminal(gui, manager){
 }
 
 extend(Widget, Terminal, {
+  searchNodeOnTree: function(tree, name) {
+        for (var i = 0; i < tree.length; i++) {
+            var node = tree[i];
+            if (node.name == name) {
+                return node;
+            }
+        }
+        return false;
+    },
+    buildFullPath: function(path) {
+        var basePath = this._currentFolder.path;
+        var fullPath = [basePath, path].join('/');
+        return fullPath;
+    },
+    buildRootNode: function(me) {
+        return {name: '~', tree: this._treebeard.tree(), path: this._treebeard._home};
+    },
     hasFocus: function() {
         return this._focus;
     },

@@ -15,7 +15,9 @@
       <script type="text/javascript" src="core/libs/mousetrap.min.js"></script>
       <script type="text/javascript">
           $(document).ready(function() {
+              var gui = require('nw.gui');
               var spitfireManager = new SpitfireManager(Mousetrap, localStorage, $('#SpitfireContainer'));
+              spitfireManager.gui(gui);
 
               process.on('uncaughtException', function(e) {
                   spitfireManager.showPlainModal('Error!', 'Something went wrong :( <br />' + e);
@@ -50,8 +52,7 @@
               
               $(document).bind('keydown.terminal', keyhandler);
               $(document).bind('keypress.terminal', keyhandler);
-              
-              var gui = require('nw.gui');
+
               var se = require('./spitfire-editor.js');
               se.init(gui, $('#SpitfireContainer'), spitfireManager);
           });
