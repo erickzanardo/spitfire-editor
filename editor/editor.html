@@ -17,6 +17,12 @@
           $(document).ready(function() {
               var spitfireManager = new SpitfireManager(Mousetrap, localStorage, $('#SpitfireContainer'));
 
+              process.on('uncaughtException', function(e) {
+                  spitfireManager.showPlainModal('Error!', 'Something went wrong :( <br />' + e);
+                  console.log(e);
+                  return false;
+              });
+
               var keyManager = spitfireManager.keyManager();
               var helperKeys = keyManager.helperKeys;
               
