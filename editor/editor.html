@@ -39,6 +39,17 @@
               var keyhandler = function(e) {
                   var key = e.which;
 
+                  // Modals
+                  console.log(spitfireManager.currentModal());
+                  if (spitfireManager.currentModal()) {
+                      if (key == helperKeys.ESC_KEY) {
+                          spitfireManager.currentModal().close();
+                      } else if (key == helperKeys.ENTER_KEY) {
+                          spitfireManager.currentModal().element().find('.btn-primary').click();
+                      }
+                      return;
+                  }
+
                   if ((e.type == 'keypress') || (e.type == 'keydown' && keydownkeys.indexOf(key) != -1)) {
                       var listeners = spitfireManager.inputListeners();
                       for (var i = 0 ; i < listeners.length ; i++) {

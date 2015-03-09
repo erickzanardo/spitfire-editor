@@ -24,6 +24,7 @@ SpitfireManager = function(mousetrap, localStorage, $body) {
     this._withFocus = null;
     this._focusHistoryExclusion = [];
     this._gui = null;
+    this._currentModal = null;
 
     // Load config
     var config = this.localDb().get('Spitfire_Config');
@@ -115,7 +116,7 @@ SpitfireManager.prototype.lastFocus = function() {
 };
 
 SpitfireManager.prototype.showPlainModal = function(title, body) {
-    var modal = new Modal(this._$body);
+    var modal = new Modal(this._$body, this);
     modal.title(title);
     modal.body(body);
     modal.addPrimaryButton('Ok', function() {
@@ -125,7 +126,7 @@ SpitfireManager.prototype.showPlainModal = function(title, body) {
 };
 
 SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, onCancel) {
-    var modal = new Modal(this._$body);
+    var modal = new Modal(this._$body, this);
     modal.title(title);
     modal.body(body);
     modal.addDefaultButton('No', function() {
@@ -150,6 +151,14 @@ SpitfireManager.prototype.action = function(key, arguments) {
 
 SpitfireManager.prototype.saveConfigs = function() {
     this.localDb().save('Spitfire_Config', this.config);
+};
+
+SpitfireManager.prototype.currentModal = function(modal) {
+    if (modal !== undefined) {
+        this._currentModal = modal;
+    } else {
+        return this._currentModal;
+    }
 };
 
 SpitfireManager.prototype.config = {

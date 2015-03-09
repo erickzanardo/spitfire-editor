@@ -1,6 +1,7 @@
 // This widget is accessible only byt the SpitfireManager, so it's include directly on the editor.html page
-function Modal($body){
+function Modal($body, manager){
     this._$body = $body;
+    this._manager = manager;
     this._element = $(
         '<div class="modal fade">' +
         '  <div class="modal-dialog">' +
@@ -38,11 +39,16 @@ Modal.prototype = {
         this.addButton(label, 'btn-primary', callback);
     },
     show: function() {
+        this._manager.currentModal(this);
         this._$body.append(this._element);
         this._element.modal('show');
     },
     close: function() {
+        this._manager.currentModal(null);
         this._element.modal('hide');
         this._element.remove();
+    },
+    element: function() {
+      return this._element;
     }
 };
