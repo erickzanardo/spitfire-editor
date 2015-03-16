@@ -62,7 +62,8 @@ function Terminal(gui, manager){
         'ls.js',
         'cd.js',
         'mkdir.js',
-        'touch.js'
+        'touch.js',
+        'reload.js'
     ];
     this._commands = {};
     // register commands
@@ -74,28 +75,7 @@ function Terminal(gui, manager){
 
     var keyManager = manager.keyManager();
     var helperKeys = keyManager.helperKeys;
-    
-    var parseCommand = function(command) {
-        var result = [];
-        var currentChar = '';
-        var currentWord = '';
-        var opennedQuote = false;
-        for (var i = 0; i < command.length; i++) {
-            currentChar = command[i];
-            if (currentChar == '"') {
-                opennedQuote = !opennedQuote;
-            }
-            if (!opennedQuote && currentChar == ' ') {
-                result.push(currentWord);
-                currentWord = '';
-            } else {
-                currentWord += currentChar;
-            }
-        }
-        result.push(currentWord);
-        return result;
-    };
-  
+
     manager.addInputListener(function(e) {
         if (me.hasFocus()) {
             var w = e.which;
@@ -109,69 +89,7 @@ function Terminal(gui, manager){
             }
 
             if (w == helperKeys.ENTER_KEY) {
-                line.find('.cursor').removeClass('cursor');
-                var commandLine = line.find('.command').text();
-                var split = parseCommand(commandLine);
-                var args = [];
-                for (var i = 0 ; i < split.length ; i++) {
-                    var arg = split[i];
-                    if (arg) {
-                        args.push(arg);
-                    }
-                }
-
-                var command = args.shift();
-
-                var addCommandToHistory = function() {
-                    var history = line.find('.command').html();
-                    var found = false;
-                    for (var i = 0 ; i < me._history.length ; i++) {
-                        if (me._history[i] == history) {
-                            found = true;
-                        }
-                        break;
-                    }
-                    if (!found) {
-                        me._history.unshift(history);
-                        manager.localDb().save('COMMAND_HISTORY', me._history);
-                    }
-                    me._historyIndex = 0;
-                };
-              
-                if (me._commands[command]) {
-                    me._commands[command](args, me, manager, function() {
-                        me.addLine();
-                    });
-                    addCommandToHistory();
-                } else {
-                    var nativeCommands = manager.config.trustedNativeCommands;
-                    if (nativeCommands.indexOf(command) != -1) {
-                        if (me._currentFolder) {
-                          addCommandToHistory();
-                          line.append('<pre></pre>');
-                          var spawn = require('child_process').spawn,
-                              cmd   = spawn(command, args, {cwd: me._currentFolder.path});
-
-                          cmd.stdout.on('data', function (data) {
-                            line.children('pre').append('' + data);
-                          });
-
-                          cmd.stderr.on('data', function (data) {
-                            line.children('pre').append('' + data);
-                          });
-
-                          cmd.on('close', function() {
-                              me.addLine();
-                          });
-                        } else {
-                          terminal.printLine('There is no folder open yet!');
-                          me.addLine();
-                        }
-                    } else {
-                        me.printLine('unrecognized command: ' + command);
-                        me.addLine();
-                    }
-                }
+              me.executeCommand();
             } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
             } else if (w == helperKeys.LEFT_KEY || w == helperKeys.RIGHT_KEY) {
@@ -217,7 +135,99 @@ function Terminal(gui, manager){
     });
 }
 
+var parseCommand = function(command) {
+    var result = [];
+    var currentChar = '';
+    var currentWord = '';
+    var opennedQuote = false;
+    for (var i = 0; i < command.length; i++) {
+        currentChar = command[i];
+        if (currentChar == '"') {
+            opennedQuote = !opennedQuote;
+        }
+        if (!opennedQuote && currentChar == ' ') {
+            result.push(currentWord);
+            currentWord = '';
+        } else {
+            currentWord += currentChar;
+        }
+    }
+    result.push(currentWord);
+    return result;
+};
+
 extend(Widget, Terminal, {
+  executeCommand: function(command) {
+      var me = this;
+      var manager = me._manager;
+      var lines = me._lines;
+      var line = lines[lines.length - 1]
+
+      var commandLine = command || line.find('.command').text();
+
+          line.find('.cursor').removeClass('cursor');
+          var split = parseCommand(commandLine);
+          var args = [];
+          for (var i = 0 ; i < split.length ; i++) {
+              var arg = split[i];
+              if (arg) {
+                  args.push(arg);
+              }
+          }
+
+          var command = args.shift();
+
+          var addCommandToHistory = function() {
+              var history = commandLine;
+              var found = false;
+              for (var i = 0 ; i < me._history.length ; i++) {
+                  if (me._history[i] == history) {
+                      found = true;
+                  }
+                  break;
+              }
+              if (!found) {
+                  me._history.unshift(history);
+                  manager.localDb().save('COMMAND_HISTORY', me._history);
+              }
+              me._historyIndex = 0;
+          };
+
+          if (me._commands[command]) {
+              me._commands[command](args, me, manager, function() {
+                  me.addLine();
+              });
+              addCommandToHistory();
+          } else {
+              var nativeCommands = manager.config.trustedNativeCommands;
+              if (nativeCommands.indexOf(command) != -1) {
+                  if (me._currentFolder) {
+                    addCommandToHistory();
+                    line.append('<pre></pre>');
+                    var spawn = require('child_process').spawn,
+                        cmd   = spawn(command, args, {cwd: me._currentFolder.path});
+
+                    cmd.stdout.on('data', function (data) {
+                      line.children('pre').append('' + data);
+                    });
+
+                    cmd.stderr.on('data', function (data) {
+                      line.children('pre').append('' + data);
+                    });
+
+                    cmd.on('close', function() {
+                        me.addLine();
+                    });
+                  } else {
+                    terminal.printLine('There is no folder open yet!');
+                    me.addLine();
+                  }
+              } else {
+                  me.printLine('unrecognized command: ' + command);
+                  me.addLine();
+              }
+          }
+  },
   searchNodeOnTree: function(tree, name) {
         for (var i = 0; i < tree.length; i++) {
             var node = tree[i];

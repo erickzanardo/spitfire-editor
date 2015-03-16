@@ -16,6 +16,7 @@ var command = {
             } else {
                 terminal._currentFolder = terminal.buildRootNode(terminal);
             }
+          done();
         } else {
             var tree = terminal._currentFolder.tree;
             for (var i = 0 ; i < tree.length ; i++) {
