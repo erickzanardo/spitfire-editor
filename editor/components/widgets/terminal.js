@@ -157,7 +157,7 @@ var parseCommand = function(command) {
 };
 
 extend(Widget, Terminal, {
-  executeCommand: function(command) {
+  executeCommand: function(command, callback) {
       var me = this;
       var manager = me._manager;
       var lines = me._lines;
@@ -174,6 +174,10 @@ extend(Widget, Terminal, {
                   args.push(arg);
               }
           }
+
+          var done = callback || function() {
+            me.addLine();
+          };
 
           var command = args.shift();
 
@@ -194,9 +198,7 @@ extend(Widget, Terminal, {
           };
 
           if (me._commands[command]) {
-              me._commands[command](args, me, manager, function() {
-                  me.addLine();
-              });
+              me._commands[command](args, me, manager, done);
               addCommandToHistory();
           } else {
               var nativeCommands = manager.config.trustedNativeCommands;
@@ -215,16 +217,14 @@ extend(Widget, Terminal, {
                       line.children('pre').append('' + data);
                     });
 
-                    cmd.on('close', function() {
-                        me.addLine();
-                    });
+                    cmd.on('close', done);
                   } else {
                     terminal.printLine('There is no folder open yet!');
-                    me.addLine();
+                    done();
                   }
               } else {
                   me.printLine('unrecognized command: ' + command);
-                  me.addLine();
+                  done();
               }
           }
   },
