@@ -161,13 +161,13 @@ var parseCommand = function(command) {
 };
 
 extend(Widget, Terminal, {
-  executeCommand: function(command, callback) {
+  executeCommand: function(overideCommand, callback) {
       var me = this;
       var manager = me._manager;
       var lines = me._lines;
       var line = lines[lines.length - 1]
 
-      var commandLine = command || line.find('.command').text();
+      var commandLine = overideCommand || line.find('.command').text();
 
           line.find('.cursor').removeClass('cursor');
           var split = parseCommand(commandLine);
@@ -186,19 +186,21 @@ extend(Widget, Terminal, {
           var command = args.shift();
 
           var addCommandToHistory = function() {
-              var history = commandLine;
-              var found = false;
-              for (var i = 0 ; i < me._history.length ; i++) {
-                  if (me._history[i] == history) {
-                      found = true;
+              if (!overideCommand) {
+                  var history = line.find('.command').html();
+                  var found = false;
+                  for (var i = 0 ; i < me._history.length ; i++) {
+                      if (me._history[i] == history) {
+                          found = true;
+                      }
+                      break;
                   }
-                  break;
+                  if (!found) {
+                      me._history.unshift(history);
+                      manager.localDb().save('COMMAND_HISTORY', me._history);
+                  }
+                  me._historyIndex = 0;
               }
-              if (!found) {
-                  me._history.unshift(history);
-                  manager.localDb().save('COMMAND_HISTORY', me._history);
-              }
-              me._historyIndex = 0;
           };
 
           if (me._commands[command]) {
