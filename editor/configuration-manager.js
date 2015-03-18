@@ -1,3 +1,6 @@
+var rk = require('rekuire');
+var workspaceManager = rk('workspace-manager.js');
+
 var CONFIG_KEY = 'Spitfire_Config';
 
 var defaultConfig = {
@@ -21,27 +24,42 @@ ConfigurationManager.prototype.init = function(manager) {
 };
 
 ConfigurationManager.prototype.set = function(key, value) {
-  this._config[key] = value;
+  this.obj()[key] = value;
   this.save();
 };
 
 ConfigurationManager.prototype.get = function(key) {
-  return this._config[key];
+  return this.obj()[key];
 };
 
 ConfigurationManager.prototype.add = function(key, value) {
-  this._config[key].push(value);
+  this.obj()[key].push(value);
   this.save();
 };
 
 ConfigurationManager.prototype.remove = function(key, value) {
-  var i = this._config[key].indexOf(value);
-  this._config[key].splice(i, 1);
+  var obj = this.obj()[key];
+  var i = obj.indexOf(value);
+  obj.splice(i, 1);
   this.save();
 };
 
+ConfigurationManager.prototype.obj = function() {
+  return workspaceManager.currentWorkspace() ?
+    workspaceManager.currentWorkspace().config() :
+    this.globalObj();
+};
+
+ConfigurationManager.prototype.globalObj = function() {
+  return this._config;
+};
+
 ConfigurationManager.prototype.save = function() {
-  this._manager.localDb().save(CONFIG_KEY, this._config);
+  if (workspaceManager.currentWorkspace()) {
+    workspaceManager.save();
+  } else {
+    this._manager.localDb().save(CONFIG_KEY, this._config);
+  }
 };
 
 module.exports = new ConfigurationManager();

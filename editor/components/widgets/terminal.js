@@ -5,6 +5,7 @@ var fu = require('../utils/file-utils.js');
 var rk = require('rekuire');
 
 var workspaceManager = rk('workspace-manager.js');
+var configurationManager = rk('configuration-manager.js');
 
 function Terminal(gui, manager){
     Widget.call(this);
@@ -204,7 +205,7 @@ extend(Widget, Terminal, {
               me._commands[command](args, me, manager, done);
               addCommandToHistory();
           } else {
-              var nativeCommands = manager.config.trustedNativeCommands;
+              var nativeCommands = configurationManager.get('trustedNativeCommands');
               if (nativeCommands.indexOf(command) != -1) {
                   if (me._currentFolder) {
                     addCommandToHistory();

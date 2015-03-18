@@ -1,9 +1,10 @@
+var rk = require('rekuire');
 var WORKSPACE_KEY = 'Spitfire_Workspaces';
 
 function Workspace(name, path, config) {
   this._name = name;
   this._path = path;
-  this._config = config || {};
+  this._config = config || rk('configuration-manager.js').globalObj();
 }
 
 Workspace.prototype.name = function() {
@@ -63,6 +64,10 @@ WorkspaceManager.prototype.open = function(name) {
 
 WorkspaceManager.prototype.currentWorkspace = function() {
   return this._currentWorkspace;
+};
+
+WorkspaceManager.prototype.quit = function() {
+  this._currentWorkspace = null;
 };
 
 WorkspaceManager.prototype.save = function() {

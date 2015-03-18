@@ -28,11 +28,21 @@ var command = {
                     terminal.printLine(' Path: ' + terminal._treebeard._home);
                   } catch (e){
                     terminal.printLine(e);
+                    console.log(e);
                   }
               }
             }
             done();
             return;
+        }
+
+        // Quiting from an workspace
+        i = args.indexOf('-q');
+        if (i != -1) {
+          args.splice(i, 1);
+          workspaceManager.quit();
+          done();
+          return;
         }
 
         // Removing an workspace
