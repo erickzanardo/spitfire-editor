@@ -4,6 +4,8 @@ var $ = require('../../core/libs/jquery-2.1.3.min.js');
 var fu = require('../utils/file-utils.js');
 var rk = require('rekuire');
 
+var workspaceManager = rk('workspace-manager.js');
+
 function Terminal(gui, manager){
     Widget.call(this);
     this._element = $('<div class="se-terminal"></div>');
@@ -263,6 +265,12 @@ extend(Widget, Terminal, {
         if (this._currentFolder) {
             var name = this._currentFolder.path;
             name = name.replace(this._treebeard._home, '~');
+
+            workspace = workspaceManager.currentWorkspace();
+            if (workspace) {
+              name = ['(', workspace.name() , ') ', name].join('');
+            }
+
             var folderIndicator = $('<span class="folder-indicator"></span>');
             folderIndicator.text(name);
             line.prepend(folderIndicator);

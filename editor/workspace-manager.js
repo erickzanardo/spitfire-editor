@@ -59,7 +59,11 @@ WorkspaceManager.prototype.open = function(name) {
   var ws = this._workspaces[name];
   this._currentWorkspace = ws;
   return ws;
-}
+};
+
+WorkspaceManager.prototype.currentWorkspace = function() {
+  return this._currentWorkspace;
+};
 
 WorkspaceManager.prototype.save = function() {
   var data = {};
