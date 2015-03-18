@@ -2,6 +2,9 @@ var extend = require('../utils/extends.js');
 var Widget = require('./widget.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 
+var rk = require('rekuire');
+var configurationManager = rk('configuration-manager.js');
+
 function AceEditor(gui, manager, tabEditor, tabEditorId, id, filePath){
     Widget.call(this);
     this._myId = ['editor', tabEditorId, id].join('_');
@@ -39,9 +42,9 @@ extend(Widget, AceEditor, {
            me._manager.focusOn(me._tabEditor); 
         });
         
-        editor.setOption('showInvisibles', manager.config.showWhitespaces === 'true');
-        editor.setFontSize(manager.config.editorFontSize);
-        var tabSize = parseInt(manager.config.tabSize);
+        editor.setOption('showInvisibles', configurationManager.get('showWhitespaces') === 'true');
+        editor.setFontSize(configurationManager.get('editorFontSize'));
+        var tabSize = parseInt(configurationManager.get('tabSize'));
         tabSize = isNaN(tabSize) ? 4 : tabSize;
         editor.getSession().setTabSize(tabSize);
 

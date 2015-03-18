@@ -10,11 +10,13 @@ var $ = require('./core/libs/jquery-2.1.3.min.js');
 
 var rk = require('rekuire');
 var workspaceManager = rk('workspace-manager.js');
+var configurationManager = rk('configuration-manager.js');
 
 function EditorEntry() {}
 
 EditorEntry.prototype.init = function(gui, root, manager) {
     workspaceManager.init(manager);
+    configurationManager.init(manager);
   
     // Get the current window
     var nwin = gui.Window.get();

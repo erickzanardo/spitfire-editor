@@ -4,6 +4,13 @@ var rimraf = require('rimraf');
 var mv = require('mv');
 var Ent = require('../../core/libs/ent.js');
 
+var rk = require('rekuire');
+var configurationManager = rk('configuration-manager.js');
+
+var charset = function() {
+  return configurationManager.get('charset');
+};
+
 function FileUtils() {
 }
 
@@ -51,7 +58,7 @@ FileUtils.prototype.readDirTree = function(path, treebeard) {
 };
 
 FileUtils.prototype.readFile = function(path, manager, callback) {
-    fs.readFile(path, manager.config.charset, callback);
+    fs.readFile(path, charset(), callback);
 };
 
 FileUtils.prototype.createDirs = function(path, callback) {
@@ -70,7 +77,7 @@ FileUtils.prototype.removeFile = function(path, callback) {
 };
 
 FileUtils.prototype.saveFile = function(path, manager, content, callback) {
-    fs.writeFile(path, content, {encoding: manager.config.charset}, callback);
+    fs.writeFile(path, content, {encoding: charset()}, callback);
 };
 
 FileUtils.prototype.move = function(srcPath, destPath, callback) {

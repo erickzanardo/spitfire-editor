@@ -25,12 +25,6 @@ SpitfireManager = function(mousetrap, localStorage, $body) {
     this._focusHistoryExclusion = [];
     this._gui = null;
     this._currentModal = null;
-
-    // Load config
-    var config = this.localDb().get('Spitfire_Config');
-    if (config) {
-        this.config = config;
-    }
 };
 
 SpitfireManager.prototype.gui = function(gui) {
@@ -149,22 +143,10 @@ SpitfireManager.prototype.action = function(key, arguments) {
     return action.obj[action.func].apply(action.obj, arguments);
 };
 
-SpitfireManager.prototype.saveConfigs = function() {
-    this.localDb().save('Spitfire_Config', this.config);
-};
-
 SpitfireManager.prototype.currentModal = function(modal) {
     if (modal !== undefined) {
         this._currentModal = modal;
     } else {
         return this._currentModal;
     }
-};
-
-SpitfireManager.prototype.config = {
-    charset: 'utf-8',
-    editorFontSize: 14,
-    trustedNativeCommands: [],
-    showWhitespaces: true,
-    tabSize: 4
 };
