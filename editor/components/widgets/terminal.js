@@ -63,7 +63,8 @@ function Terminal(gui, manager){
         'cd.js',
         'mkdir.js',
         'touch.js',
-        'reload.js'
+        'reload.js',
+        'workspace.js'
     ];
     this._commands = {};
     // register commands

@@ -21,7 +21,6 @@
 
               process.on('uncaughtException', function(e) {
                   spitfireManager.showPlainModal('Error!', 'Something went wrong :( <br />' + e);
-                  console.log(e);
                   return false;
               });
 
@@ -40,7 +39,6 @@
                   var key = e.which;
 
                   // Modals
-                  console.log(spitfireManager.currentModal());
                   if (spitfireManager.currentModal()) {
                       if (key == helperKeys.ESC_KEY) {
                           spitfireManager.currentModal().close();
