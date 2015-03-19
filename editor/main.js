@@ -46,7 +46,7 @@ EditorEntry.prototype.init = function(gui, root, manager) {
     codePanel.add(leftPanel, 20);
     codePanel.add(rightPanel, 80);
     
-    var terminal = new Terminal(gui, manager);
+    var terminal = new Terminal(gui, manager, tabEditor);
     mainPanel.add(terminal, 20);
 
     var fileSearch = new FileSearch(manager, tabEditor);

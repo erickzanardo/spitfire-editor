@@ -7,8 +7,9 @@ var rk = require('rekuire');
 var workspaceManager = rk('workspace-manager.js');
 var configurationManager = rk('configuration-manager.js');
 
-function Terminal(gui, manager){
+function Terminal(gui, manager, tabEditor){
     Widget.call(this);
+    this._tabEditor = tabEditor;
     this._element = $('<div class="se-terminal"></div>');
     this._focus = false;
     this._lines = [];
@@ -67,7 +68,8 @@ function Terminal(gui, manager){
         'mkdir.js',
         'touch.js',
         'reload.js',
-        'workspace.js'
+        'workspace.js',
+        'open.js'
     ];
     this._commands = {};
     // register commands
