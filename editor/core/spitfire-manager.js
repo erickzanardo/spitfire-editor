@@ -117,6 +117,7 @@ SpitfireManager.prototype.showPlainModal = function(title, body) {
         modal.close();
     });
     modal.show();
+    return modal;
 };
 
 SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, onCancel) {
@@ -136,6 +137,7 @@ SpitfireManager.prototype.showConfirmModal = function(title, body, onConfirm, on
         }
     });
     modal.show();
+    return modal;
 };
 
 SpitfireManager.prototype.action = function(key, arguments) {

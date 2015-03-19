@@ -69,7 +69,8 @@ function Terminal(gui, manager, tabEditor){
         'touch.js',
         'reload.js',
         'workspace.js',
-        'open.js'
+        'open.js',
+        'find.js'
     ];
     this._commands = {};
     // register commands
