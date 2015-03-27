@@ -97,6 +97,29 @@ function Terminal(gui, manager, tabEditor){
 
             if (w == helperKeys.ENTER_KEY) {
               me.executeCommand();
+            } else if (w == helperKeys.TAB_KEY) {
+                var command = me.getCommand();
+                var autocompleter = rk('components/widgets/terminal-autocomplete/default.js');
+                if (me._commands[command.command]) {
+                    if (me._commands[command.command].autocompleter) {
+                        autocompleter = me._commands[command.command].autocompleter;
+                    }
+                }
+                var result = autocompleter.complete(me, command);
+                if (result.length) {
+                    if (result.length == 1) { 
+                        me.addLine(result[0].fullCommand);
+                    } else {
+                        var suggestions = [];
+                        while (result.length) {
+                            suggestions.push(result.shift().suggestion);
+                        }
+                        var fullCommand = me.readLine();
+                        me.printLine(suggestions.join(' '));
+                        me.addLine(fullCommand);
+                    }
+                    line.find('.cursor').removeClass('cursor');
+                }
             } else if (w == helperKeys.BACKSPACE_KEY) {
                 line.find('.cursor').prev().remove();
             } else if (w == helperKeys.LEFT_KEY || w == helperKeys.RIGHT_KEY) {
@@ -164,29 +187,43 @@ var parseCommand = function(command) {
 };
 
 extend(Widget, Terminal, {
+    readLine: function() {
+        var me = this;
+        var lines = me._lines;
+        var line = lines[lines.length - 1];
+        return line.find('.command').text()
+    },
+    getCommand: function(overideCommand) {
+        var commandLine = overideCommand || this.readLine();
+        var split = parseCommand(commandLine);
+        var args = [];
+        for (var i = 0 ; i < split.length ; i++) {
+            var arg = split[i];
+            if (arg) {
+                args.push(arg);
+            }
+        }
+
+        var command = args.shift();
+        return {
+            command: command,
+            args: args
+        };
+    },
   executeCommand: function(overideCommand, callback) {
       var me = this;
       var manager = me._manager;
       var lines = me._lines;
       var line = lines[lines.length - 1]
+      line.find('.cursor').removeClass('cursor');
 
-      var commandLine = overideCommand || line.find('.command').text();
-
-          line.find('.cursor').removeClass('cursor');
-          var split = parseCommand(commandLine);
-          var args = [];
-          for (var i = 0 ; i < split.length ; i++) {
-              var arg = split[i];
-              if (arg) {
-                  args.push(arg);
-              }
-          }
+      var parsedCommand = this.getCommand(overideCommand);
+      var command = parsedCommand.command;
+      var args = parsedCommand.args;
 
           var done = callback || function() {
             me.addLine();
           };
-
-          var command = args.shift();
 
           var addCommandToHistory = function() {
               if (!overideCommand) {
@@ -265,7 +302,7 @@ extend(Widget, Terminal, {
             this._element.removeClass('active');
         }
     },
-    addLine: function() {
+    addLine: function(command) {
         var line = $('<p class="line"></p>');
         line.append('<div class="command"><span class="cursor"></span></div>')
         if (this._currentFolder) {
@@ -275,6 +312,15 @@ extend(Widget, Terminal, {
             workspace = workspaceManager.currentWorkspace();
             if (workspace) {
               name = ['(', workspace.name() , ') ', name].join('');
+            }
+
+            if (command) {
+                var chars = command.split('');
+                while(chars.length) {
+                    var char = $('<span></span>');
+                    char.text(chars.shift());
+                    line.find('.cursor').before(char);
+                }
             }
 
             var folderIndicator = $('<span class="folder-indicator"></span>');
