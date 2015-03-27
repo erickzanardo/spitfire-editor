@@ -4,6 +4,9 @@ var AceEditor = require('./ace-editor.js');
 var $ = require('../../core/libs/jquery-2.1.3.min.js');
 var fu = require('../utils/file-utils.js');
 
+var rk = require('rekuire');
+var configurationManager = rk('configuration-manager.js');
+
 function TabEditor(gui, id, manager){
     Widget.call(this);
     this._editorCount = 0;
@@ -204,19 +207,20 @@ extend(Widget, TabEditor, {
         }
     },
     _updateEditorsFont: function() {
-        this._manager.saveConfigs();
         for (var i = 0 ; i < this._editors.length ; i++) {
             var editor = this._editors[i];
-            editor.setFontSize(this._manager.config.editorFontSize);
+            editor.setFontSize(configurationManager.get('editorFontSize'));
         }
     },
     zoomIn: function() {
-        this._manager.config.editorFontSize++;
+        var size = configurationManager.get('editorFontSize');
+        configurationManager.set('editorFontSize', (size + 1))
         this._updateEditorsFont();
     },
     zoomOut: function() {
-        if (this._manager.config.editorFontSize > 1) {
-            this._manager.config.editorFontSize--;
+        var size = configurationManager.get('editorFontSize');
+        if (size > 1) {
+            configurationManager.set('editorFontSize', (size - 1))
             this._updateEditorsFont();
         }
     }
